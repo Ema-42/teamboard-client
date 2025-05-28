@@ -2,6 +2,8 @@ import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import ListBoards from "../components/board/List-Boards";
+import { useSecureFetch } from "../hooks/useSecureFetch";
+
 const Dashboard = () => {
   const { user, logout, isAuthenticated, token } = useAuth();
   const [boards, setBoards] = useState([]);
@@ -11,9 +13,12 @@ const Dashboard = () => {
       fetchBoards();
     }
   }, [isAuthenticated]);
+
+  const { secureFetch } = useSecureFetch();
+
   const fetchBoards = async () => {
     try {
-      const response = await fetch(
+      const response = await secureFetch(
         `${import.meta.env.VITE_BACKEND_URL}/boards/my-boards`,
         {
           headers: {
@@ -21,22 +26,15 @@ const Dashboard = () => {
           },
         }
       );
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        setBoards(data);
-      } else {
-        console.error("Failed to fetch boards");
-      }
+      const data = await response.json();
+      setBoards(data);
     } catch (error) {
-      console.error("Error fetching boards:", error);
+      console.error("Error:", error.message);
     }
   };
 
   return (
-    <div className="flex flex-1 flex-col bg-gray-100 dark:bg-gray-900 p-4">
-
+    <div className="flex flex-1 flex-col bg-stone-200 dark:bg-gray-800 p-4">
       <div className="flex flex-wrap gap-4">
         <ListBoards boards={boards} />
       </div>

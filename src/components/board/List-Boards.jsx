@@ -32,15 +32,6 @@ const ListBoards = ({ boards = [] }) => {
   const editCardRef = useRef(null);
   const addCardRef = useRef(null);
 
-  const defaultColorLight = "#37a375"; // Color verde por defecto (light)
-  const defaultColorDark = "#1e3a8a"; // Color azul marino (dark)
-
-  const getOneHourLater = () => {
-    const now = new Date();
-    now.setHours(now.getHours() + 1);
-    return now.toISOString().slice(0, 16);
-  };
-
   useEffect(() => {
     if (boards && boards.length > 0) {
       const boardsWithTasks = boards.map((board) => ({
@@ -60,6 +51,20 @@ const ListBoards = ({ boards = [] }) => {
     });
   };
 
+  // Función para cancelar la edición de tarjeta
+  const cancelEditCard = () => {
+    setEditingCardId(null);
+    setEditingCardText("");
+    setEditingCardDate("");
+  };
+
+  // Función para cancelar agregar nueva tarjeta
+  const cancelAddCard = () => {
+    setAddingCardToBoardId(null);
+    setNewCardText("");
+    setNewCardDate("");
+  };
+
   const handleSaveEditedCard = () => {
     if (!editingCardId) return;
 
@@ -77,7 +82,6 @@ const ListBoards = ({ boards = [] }) => {
         newBoards[boardIndex].tasks[taskIndex] = {
           ...newBoards[boardIndex].tasks[taskIndex],
           title: editingCardText,
-          color: defaultColorLight,
           dueDate: editingCardDate,
         };
 
@@ -100,7 +104,7 @@ const ListBoards = ({ boards = [] }) => {
       newBoards[boardIndex].tasks.push({
         id: Date.now().toString(),
         title: newCardText,
-        color: defaultColorLight,
+
         dueDate: newCardDate,
         check: false,
         createdAt: new Date().toISOString(),
@@ -249,7 +253,7 @@ const ListBoards = ({ boards = [] }) => {
     setEditingCardId(null);
     setAddingCardToBoardId(boardId);
     setNewCardText("");
-    setNewCardDate(getOneHourLater());
+    setNewCardDate(""); // Fecha vacía por defecto
   };
 
   const handleKeyDown = (e, saveFunction) => {
@@ -308,7 +312,7 @@ const ListBoards = ({ boards = [] }) => {
         {boardsList.map((board) => (
           <div
             key={board.id}
-            className="bg-gray-300 dark:bg-gray-700 rounded-md shadow-lg w-80 flex flex-col"
+            className="bg-white dark:bg-gray-950/30 rounded-md shadow-lg w-80 flex flex-col"
           >
             <div className="p-3 flex justify-between items-center">
               {editingBoardId === board.id ? (
@@ -383,13 +387,10 @@ const ListBoards = ({ boards = [] }) => {
                 sortTasks(board.tasks).map((task) => (
                   <div
                     key={task.id}
-                    className="mb-2 rounded-md p-2"
-                    style={{
-                      backgroundColor: defaultColorDark,
-                    }}
+                    className="mb-2 rounded-md p-0 relative bg-gray-300 dark:bg-gray-700"
                   >
                     {editingCardId === task.id ? (
-                      <div ref={editCardRef} className="w-full">
+                      <div ref={editCardRef} className="w-full p-2">
                         <textarea
                           value={editingCardText}
                           onChange={(e) => {
@@ -400,7 +401,6 @@ const ListBoards = ({ boards = [] }) => {
                             handleKeyDown(e, handleSaveEditedCard)
                           }
                           className="w-full bg-transparent border border-gray-400 dark:border-gray-600 rounded p-1 text-sm resize-none min-h-[60px] focus:outline-none focus:border-teal-500 text-white"
-                          style={{ backgroundColor: defaultColorDark }}
                           autoFocus
                         />
                         <div className="flex gap-2 mt-2">
@@ -408,77 +408,90 @@ const ListBoards = ({ boards = [] }) => {
                             type="datetime-local"
                             value={editingCardDate}
                             onChange={(e) => setEditingCardDate(e.target.value)}
-                            className="w-1/2 h-10 p-1 text-xs rounded border border-gray-400 bg-transparent text-white"
-                            style={{ backgroundColor: defaultColorDark }}
+                            className="flex-1 h-10 p-1 text-xs rounded border border-gray-400 bg-transparent text-white"
                           />
                           <button
                             onClick={handleSaveEditedCard}
-                            className="w-1/2 h-10 bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600"
+                            className="flex-1 h-10 bg-teal-500 text-white px-2 py-2 rounded hover:bg-teal-600 text-xs"
                           >
                             Guardar
+                          </button>
+                          <button
+                            onClick={cancelEditCard}
+                            className="w-10 h-10 bg-red-500 text-white rounded hover:bg-red-600 flex items-center justify-center"
+                          >
+                            <X size={16} />
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-start">
-                        <button
-                          onClick={() => toggleTaskCheck(board.id, task.id)}
-                          className="mr-2 flex-shrink-0 p-1"
-                        >
-                          <div
-                            className={`w-4 h-4 rounded-full border ${
-                              task.check
-                                ? "bg-green-500 border-green-600"
-                                : "bg-white dark:bg-gray-700 border-gray-400 dark:border-gray-500"
-                            }`}
-                          >
-                            {task.check && (
-                              <div className="w-2 h-2 bg-white rounded-full m-auto mt-1"></div>
-                            )}
-                          </div>
-                        </button>
+                      <div className="flex items-stretch">
                         <div
+                          className="flex-grow p-2 hover:bg-black/10 transition-colors duration-200 cursor-pointer"
                           onClick={() => handleEditCard(board.id, task)}
-                          className="cursor-pointer hover:bg-opacity-80 flex-grow"
                         >
-                          <div className="flex items-center">
-                            <p
-                              className={`text-sm font-medium p-1 ${
-                                task.check ? "line-through text-opacity-60" : ""
-                              }`}
+                          <div className="flex items-start">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleTaskCheck(board.id, task.id);
+                              }}
+                              className="mr-2 flex-shrink-0 p-1"
                             >
-                              <span className="px-2 py-1 bg-black/10 rounded-md text-white">
-                                {task.title}
-                              </span>
-                            </p>
-                            {task.check && (
-                              <span className="ml-2 px-2 py-1 bg-green-600 text-white rounded-md text-xs">
-                                Completada
-                              </span>
-                            )}
-                          </div>
-
-                          {task.dueDate && (
-                            <div className="flex items-center mt-1 text-xs">
-                              <Clock size={12} className="mr-1 text-white" />
-                              <span
-                                className={`bg-black/30 rounded-md text-white ${
-                                  !task.check &&
-                                  task.dueDate &&
-                                  new Date(task.dueDate) < new Date()
-                                    ? "text-red-400"
-                                    : ""
+                              <div
+                                className={`w-4 h-4 rounded-full border ${
+                                  task.check
+                                    ? "bg-green-500 border-green-600"
+                                    : "bg-white dark:bg-gray-700 border-gray-400 dark:border-gray-500"
                                 }`}
                               >
-                                {formatDate(task.dueDate)}
-                              </span>
+                                {task.check && (
+                                  <div className="w-2 h-2 bg-white rounded-full m-auto mt-1"></div>
+                                )}
+                              </div>
+                            </button>
+                            <div className="flex-grow">
+                              <div className="flex items-center">
+                                <p
+                                  className={`text-sm font-medium p-1 ${
+                                    task.check
+                                      ? "line-through text-opacity-60"
+                                      : ""
+                                  }`}
+                                >
+                                  <span className="px-2 py-1   text-gray-800 dark:text-white">
+                                    {task.title}
+                                  </span>
+                                </p>
+                                {task.check && (
+                                  <span className="ml-2 px-2 py-1 bg-green-600 text-white rounded-md text-xs">
+                                    Completada
+                                  </span>
+                                )}
+                              </div>
+
+                              {task.dueDate && (
+                                <div className="flex items-center mt-1 text-xs">
+                                  <Clock
+                                    size={12}
+                                    className="mr-1 text-gray-800 dark:text-white"
+                                  />
+                                  <span className="px-1   text-gray-900 dark:text-white">
+                                    {formatDate(task.dueDate)}
+                                  </span>
+                                </div>
+                              )}
                             </div>
-                          )}
+                          </div>
                         </div>
 
                         <button
-                          onClick={() => confirmDeleteTask(board.id, task.id)}
-                          className="ml-2 p-1 h-full rounded-md hover:bg-red-500 hover:bg-opacity-20 flex-shrink-0 cursor-pointer flex items-center"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            confirmDeleteTask(board.id, task.id);
+                          }}
+                          className="w-[50px] bg-gray-800/20 hover:bg-red-500/100 transition-colors duration-200 flex items-center justify-center rounded-r-md"
+                          style={{ minHeight: "100%" }}
                         >
                           <X size={16} className="text-white" />
                         </button>
@@ -508,13 +521,20 @@ const ListBoards = ({ boards = [] }) => {
                       type="datetime-local"
                       value={newCardDate}
                       onChange={(e) => setNewCardDate(e.target.value)}
-                      className="w-1/2 h-10 p-2 text-xs rounded border border-gray-400 bg-gray-400 dark:bg-gray-700 text-black dark:text-white"
+                      placeholder="Fecha opcional"
+                      className="flex-1 h-10 p-2 text-xs rounded border border-gray-400 bg-gray-400 dark:bg-gray-700 text-black dark:text-white"
                     />
                     <button
                       onClick={handleSaveNewCard}
-                      className="w-1/2 h-10 bg-teal-500 text-white rounded hover:bg-teal-600"
+                      className="flex-1 h-10 bg-teal-500 text-white rounded hover:bg-teal-600 text-xs"
                     >
                       Guardar
+                    </button>
+                    <button
+                      onClick={cancelAddCard}
+                      className="w-10 h-10 bg-red-500 text-white rounded hover:bg-red-600 flex items-center justify-center"
+                    >
+                      <X size={16} />
                     </button>
                   </div>
                 </div>
