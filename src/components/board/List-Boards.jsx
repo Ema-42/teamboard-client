@@ -14,7 +14,11 @@ import { deleteBoard, addNewBoard } from "./utils/boardOperations";
 import Modal from "./Modal";
 import { useSecureFetch } from "../../hooks/useSecureFetch";
 import { useAuth } from "../../context/AuthContext";
-import { deleteTaskOfBoard, saveNewCard } from "./utils/tasksOperations";
+import {
+  deleteTaskOfBoard,
+  editACard,
+  saveNewCard,
+} from "./utils/tasksOperations";
 
 const ListBoards = ({ boards = [] }) => {
   const [boardsList, setBoardsList] = useState([]);
@@ -34,6 +38,7 @@ const ListBoards = ({ boards = [] }) => {
   const editTitleRef = useRef(null);
   const editCardRef = useRef(null);
   const addCardRef = useRef(null);
+  const newCardTextareaRef = useRef(null);
 
   const { secureFetch } = useSecureFetch();
   const { token, user } = useAuth();
@@ -90,7 +95,11 @@ const ListBoards = ({ boards = [] }) => {
           title: editingCardText,
           dueDate: editingCardDate,
         };
-
+        const newEditedTask = {
+          title: editingCardText,
+          dueDate: editingCardDate,
+        };
+        editACard(editingCardId, newEditedTask, token, secureFetch);
         setBoardsList(newBoards);
       }
     }
@@ -117,7 +126,6 @@ const ListBoards = ({ boards = [] }) => {
       newBoards[boardIndex].tasks.push({
         id: Date.now().toString(),
         title: newCardText,
-
         dueDate: newCardDate,
         check: false,
         createdAt: new Date().toISOString(),
@@ -128,9 +136,16 @@ const ListBoards = ({ boards = [] }) => {
       setBoardsList(newBoards);
     }
 
-    setAddingCardToBoardId(null);
+    // Limpiar los campos pero mantener el formulario abierto
     setNewCardText("");
     setNewCardDate("");
+
+    // Mantener el focus en el textarea para continuar agregando tareas
+    if (newCardTextareaRef.current) {
+      newCardTextareaRef.current.focus();
+      // Resetear la altura del textarea
+      newCardTextareaRef.current.style.height = "auto";
+    }
   };
 
   const toggleTaskCheck = (boardId, taskId) => {
@@ -528,6 +543,7 @@ const ListBoards = ({ boards = [] }) => {
               {addingCardToBoardId === board.id ? (
                 <div ref={addCardRef} className="w-full">
                   <textarea
+                    ref={newCardTextareaRef}
                     value={newCardText}
                     onChange={(e) => {
                       setNewCardText(e.target.value);

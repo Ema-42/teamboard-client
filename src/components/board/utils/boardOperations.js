@@ -33,7 +33,7 @@ export const addNewBoard = async (
     title: "Nuevo Tablero",
     estado: "active",
     deleted: false,
-    ownerId: "aaaf6a28-89c6-4b92-b79b-25931fd7333a",
+    ownerId: user.id,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     tasks: [],
@@ -45,7 +45,7 @@ export const addNewBoard = async (
     },
     method: "POST",
     body: JSON.stringify({
-      title: "Tablero Nuevo ",
+      title: "Nuevo Tablero",
       ownerId: user.id,
     }),
   });

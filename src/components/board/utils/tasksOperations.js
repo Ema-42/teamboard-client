@@ -21,9 +21,6 @@ export const saveEditedCard = (
 
 // Guardar la nueva tarjeta
 export const saveNewCard = async (newTask, token, secureFetch) => {
-  console.log("Saving new task:", newTask);
-  console.log("Token:", token);
-
   await secureFetch(`${import.meta.env.VITE_BACKEND_URL}/tasks`, {
     headers: {
       "Content-Type": "application/json",
@@ -34,6 +31,21 @@ export const saveNewCard = async (newTask, token, secureFetch) => {
   });
 };
 
+export const editACard = async (taskId, updatedTask, token, secureFetch) => {
+  console.log("Editing task with ID:", taskId, "with data:", updatedTask);
+
+  await secureFetch(`${import.meta.env.VITE_BACKEND_URL}/tasks/${taskId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      title: updatedTask.title,
+      dueDate: updatedTask.dueDate || null,
+    }),
+  });
+};
 export const deleteTaskOfBoard = async (taskId, token, secureFetch) => {
   await secureFetch(`${import.meta.env.VITE_BACKEND_URL}/tasks/${taskId}`, {
     method: "DELETE",
