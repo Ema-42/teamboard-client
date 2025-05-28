@@ -12,6 +12,9 @@ import {
 } from "lucide-react";
 import { deleteBoard, addNewBoard } from "./utils/boardOperations";
 import Modal from "./Modal";
+import { useSecureFetch } from "../../hooks/useSecureFetch";
+import { useAuth } from "../../context/AuthContext";
+import { deleteTaskOfBoard, saveNewCard } from "./utils/tasksOperations";
 
 const ListBoards = ({ boards = [] }) => {
   const [boardsList, setBoardsList] = useState([]);
@@ -31,6 +34,9 @@ const ListBoards = ({ boards = [] }) => {
   const editTitleRef = useRef(null);
   const editCardRef = useRef(null);
   const addCardRef = useRef(null);
+
+  const { secureFetch } = useSecureFetch();
+  const { token, user } = useAuth();
 
   useEffect(() => {
     if (boards && boards.length > 0) {
@@ -101,6 +107,13 @@ const ListBoards = ({ boards = [] }) => {
 
     if (boardIndex !== -1) {
       const newBoards = [...boardsList];
+      const newTask = {
+        title: newCardText,
+        dueDate: newCardDate || null,
+        board_id: addingCardToBoardId,
+        assignedToId: user.id,
+        created_by: user.id,
+      };
       newBoards[boardIndex].tasks.push({
         id: Date.now().toString(),
         title: newCardText,
@@ -109,6 +122,8 @@ const ListBoards = ({ boards = [] }) => {
         check: false,
         createdAt: new Date().toISOString(),
       });
+      //guardar en bd
+      saveNewCard(newTask, token, secureFetch);
 
       setBoardsList(newBoards);
     }
@@ -158,6 +173,7 @@ const ListBoards = ({ boards = [] }) => {
       newBoards[boardIndex].tasks = newBoards[boardIndex].tasks.filter(
         (task) => task.id !== taskId
       );
+      deleteTaskOfBoard(taskId, token, secureFetch);
 
       setBoardsList(newBoards);
     }
@@ -270,12 +286,19 @@ const ListBoards = ({ boards = [] }) => {
 
   const handleDeleteBoard = () => {
     const { boardId } = deleteInfo;
-    deleteBoard(boardsList, setBoardsList, boardId, setOpenOptionsId);
+    deleteBoard(
+      boardsList,
+      setBoardsList,
+      boardId,
+      setOpenOptionsId,
+      token,
+      secureFetch
+    );
     setDeleteModalOpen(false);
   };
 
   const handleAddNewBoard = () => {
-    addNewBoard(boardsList, setBoardsList);
+    addNewBoard(boardsList, setBoardsList, secureFetch, user, token);
   };
 
   const formatDate = (dateString) => {
@@ -308,7 +331,7 @@ const ListBoards = ({ boards = [] }) => {
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4 items-start">
         {boardsList.map((board) => (
           <div
             key={board.id}
@@ -322,7 +345,7 @@ const ListBoards = ({ boards = [] }) => {
                   value={editingTitle}
                   onChange={(e) => setEditingTitle(e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, saveEditedTitle)}
-                  className="bg-gray-300 text-black dark:bg-gray-600 dark:text-white px-2 py-1 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="bg-gray-300 text-black dark:bg-gray-600  dark:text-white px-2 py-1 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
                   autoFocus
                 />
               ) : (
@@ -382,7 +405,7 @@ const ListBoards = ({ boards = [] }) => {
               </div>
             </div>
 
-            <div className="p-2 flex-grow overflow-y-auto max-h-[calc(100vh-200px)]">
+            <div className={`p-2 overflow-y-auto max-h-[calc(100vh-200px)] `}>
               {board.tasks &&
                 sortTasks(board.tasks).map((task) => (
                   <div
@@ -400,7 +423,7 @@ const ListBoards = ({ boards = [] }) => {
                           onKeyDown={(e) =>
                             handleKeyDown(e, handleSaveEditedCard)
                           }
-                          className="w-full bg-transparent border border-gray-400 dark:border-gray-600 rounded p-1 text-sm resize-none min-h-[60px] focus:outline-none focus:border-teal-500 text-white"
+                          className="w-full bg-transparent border border-gray-400 dark:border-gray-600 rounded p-1 text-sm resize-none   focus:outline-none focus:border-teal-500 text-gray-800 dark:text-white"
                           autoFocus
                         />
                         <div className="flex gap-2 mt-2">
@@ -408,7 +431,7 @@ const ListBoards = ({ boards = [] }) => {
                             type="datetime-local"
                             value={editingCardDate}
                             onChange={(e) => setEditingCardDate(e.target.value)}
-                            className="flex-1 h-10 p-1 text-xs rounded border border-gray-400 bg-transparent text-white"
+                            className="flex-1 h-10 p-1 text-xs rounded border border-gray-400 bg-transparent text-gray-800 dark:text-white"
                           />
                           <button
                             onClick={handleSaveEditedCard}

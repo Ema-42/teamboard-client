@@ -5,7 +5,7 @@ import ListBoards from "../components/board/List-Boards";
 import { useSecureFetch } from "../hooks/useSecureFetch";
 
 const Dashboard = () => {
-  const { user, logout, isAuthenticated, token } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const [boards, setBoards] = useState([]);
 
   useEffect(() => {
@@ -27,6 +27,8 @@ const Dashboard = () => {
         }
       );
       const data = await response.json();
+      console.log("Fetched Boards:", data);
+      
       setBoards(data);
     } catch (error) {
       console.error("Error:", error.message);
