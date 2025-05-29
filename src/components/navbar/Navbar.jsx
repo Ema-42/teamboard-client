@@ -18,6 +18,7 @@ import {
   X,
   SunIcon,
   MoonIcon,
+  NotepadText 
 } from "lucide-react"
 
 import Logo from "/icono.png"
@@ -127,8 +128,8 @@ const Navbar = () => {
 
               {/* Logo */}
               <Link to="/dashboard" className="flex-shrink-0 flex items-center ml-0 md:ml-2">
-                <img className="h-6 w-6 mr-2" src={Logo || "/placeholder.svg"} alt="TeamBoard Logo" />
-                <span className="font-bold text-gray-900 dark:text-white hidden sm:block">TeamBoard</span>
+                <NotepadText size={30} color={isDarkMode ? "#fff" : "#000"} className="mr-2" />
+                <span className={`font-bold hidden sm:block ${isDarkMode ? "text-teal-500" : "text-teal-700"}`}>TeamBoard</span>
               </Link>
 
               {/* Desktop Navigation */}

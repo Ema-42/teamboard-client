@@ -51,3 +51,14 @@ export const addNewBoard = async (
   });
   setBoardsList([newBoard, ...boardsList]);
 };
+
+export const editBoard = async (boardId, token, editBoard, secureFetch) => {
+  await secureFetch(`${import.meta.env.VITE_BACKEND_URL}/boards/${boardId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ title: editBoard }),
+  });
+};

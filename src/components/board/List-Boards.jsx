@@ -10,7 +10,7 @@ import {
   Clock,
   X,
 } from "lucide-react";
-import { deleteBoard, addNewBoard } from "./utils/boardOperations";
+import { deleteBoard, addNewBoard, editBoard } from "./utils/boardOperations";
 import Modal from "./Modal";
 import { useSecureFetch } from "../../hooks/useSecureFetch";
 import { useAuth } from "../../context/AuthContext";
@@ -253,6 +253,9 @@ const ListBoards = ({ boards = [] }) => {
 
   const saveEditedTitle = () => {
     if (editingBoardId && editingTitle.trim() !== "") {
+      console.log("Saving edited title:", editingTitle);
+      //guardar en bd
+      editBoard(editingBoardId, token, editingTitle, secureFetch);
       setBoardsList(
         boardsList.map((board) =>
           board.id === editingBoardId
