@@ -28,17 +28,7 @@ export const addNewBoard = async (
   user,
   token
 ) => {
-  const newBoard = {
-    id: `board-${Date.now()}`,
-    title: "Nuevo Tablero",
-    estado: "active",
-    deleted: false,
-    ownerId: user.id,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    tasks: [],
-  };
-  await secureFetch(`${import.meta.env.VITE_BACKEND_URL}/boards`, {
+  const res = await secureFetch(`${import.meta.env.VITE_BACKEND_URL}/boards`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -49,7 +39,9 @@ export const addNewBoard = async (
       ownerId: user.id,
     }),
   });
-  setBoardsList([newBoard, ...boardsList]);
+  const data = await res.json(); 
+
+  setBoardsList([{ ...data.data, tasks: [] }, ...boardsList]);
 };
 
 export const editBoard = async (boardId, token, editBoard, secureFetch) => {

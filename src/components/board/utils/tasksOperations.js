@@ -32,8 +32,6 @@ export const saveNewCard = async (newTask, token, secureFetch) => {
 };
 
 export const editACard = async (taskId, updatedTask, token, secureFetch) => {
-  console.log("Editing task with ID:", taskId, "with data:", updatedTask);
-
   await secureFetch(`${import.meta.env.VITE_BACKEND_URL}/tasks/${taskId}`, {
     method: "PATCH",
     headers: {

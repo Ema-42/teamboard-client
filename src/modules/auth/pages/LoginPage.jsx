@@ -64,7 +64,7 @@ const LoginPage = () => {
       const { user, token } = await response.json();
       // Guarda el usuario y el token
       login(user, token);
-      
+
       toast.success(`Inicio de sesión exitoso`, { theme: "colored" });
       document.body.style.pointerEvents = "none";
       setTimeout(() => {

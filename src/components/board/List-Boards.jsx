@@ -9,6 +9,7 @@ import {
   Save,
   Clock,
   X,
+  Users,
 } from "lucide-react";
 import { deleteBoard, addNewBoard, editBoard } from "./utils/boardOperations";
 import Modal from "./Modal";
@@ -19,6 +20,8 @@ import {
   editACard,
   saveNewCard,
 } from "./utils/tasksOperations";
+import ToolTipOwner from "./ToolTipOwner";
+import SharedBoard from "./ModalSharedBoardWithUsers";
 
 const ListBoards = ({ boards = [] }) => {
   const [boardsList, setBoardsList] = useState([]);
@@ -336,6 +339,13 @@ const ListBoards = ({ boards = [] }) => {
       deleteTask();
     }
   };
+  const [sharedBoardOpen, setSharedBoardOpen] = useState(false);
+  const [selectedBoardToShare, setSelectedBoardToShare] = useState(null);
+
+  const handleShareBoard = (board) => {
+    setSelectedBoardToShare(board);
+    setSharedBoardOpen(true);
+  };
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -368,15 +378,25 @@ const ListBoards = ({ boards = [] }) => {
                 />
               ) : (
                 <div className="flex flex-col">
-                  <h3
-                    className="font-medium text-black dark:text-white cursor-pointer hover:text-teal-500 dark:hover:text-teal-300"
-                    onClick={() => handleEditBoard(board)}
-                  >
-                    {board.title}
-                  </h3>
+                  <div className="flex items-center mb-2.5">
+                    <div className="relative group">
+                      {board.ownerId !== user.id && (
+                        <ToolTipOwner board={board} user={user} />
+                      )}
+                    </div>
+
+                    <h3
+                      className="font-medium text-black dark:text-white cursor-pointer hover:text-teal-500 dark:hover:text-teal-300"
+                      onClick={() => handleEditBoard(board)}
+                    >
+                      {board.title}
+                    </h3>
+                  </div>
+
                   {board.createdAt && (
                     <span className="text-xs text-gray-700 dark:text-gray-400">
-                      Creado: {formatDate(board.createdAt)}
+                      Creado: {formatDate(board.createdAt)}{" "}
+                      {board.ownerId !== user.id && `por ${board.owner?.name} `}
                     </span>
                   )}
                 </div>
@@ -415,6 +435,13 @@ const ListBoards = ({ boards = [] }) => {
                         >
                           <Trash2 size={14} className="mr-2" />
                           Eliminar
+                        </button>
+                        <button
+                          onClick={() => handleShareBoard(board)}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 flex items-center"
+                        >
+                          <Users size={14} className="mr-2" />
+                          Compartir
                         </button>
                       </li>
                     </ul>
@@ -605,6 +632,14 @@ const ListBoards = ({ boards = [] }) => {
             : "¿Estás seguro de que deseas eliminar esta tarjeta? Esta acción no se puede deshacer."
         }
       />
+      {sharedBoardOpen && selectedBoardToShare && (
+        <SharedBoard
+        fetch={secureFetch}
+          board={selectedBoardToShare}
+          onClose={() => setSharedBoardOpen(false)}
+          onShare={() => setSharedBoardOpen(false)}
+        />
+      )}
     </div>
   );
 };
