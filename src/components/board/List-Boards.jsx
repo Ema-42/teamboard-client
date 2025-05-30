@@ -634,7 +634,7 @@ const ListBoards = ({ boards = [] }) => {
       />
       {sharedBoardOpen && selectedBoardToShare && (
         <SharedBoard
-        fetch={secureFetch}
+          secureFetch={secureFetch}
           board={selectedBoardToShare}
           onClose={() => setSharedBoardOpen(false)}
           onShare={() => setSharedBoardOpen(false)}
