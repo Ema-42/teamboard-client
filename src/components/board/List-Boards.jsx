@@ -123,7 +123,6 @@ const ListBoards = ({ boards = [] }) => {
         title: newCardText,
         dueDate: newCardDate || null,
         board_id: addingCardToBoardId,
-        assignedToId: user.id,
         created_by: user.id,
       };
       newBoards[boardIndex].tasks.push({
