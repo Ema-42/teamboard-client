@@ -536,8 +536,8 @@ const ListBoards = ({ boards = [] }) => {
                             </div>
                           </div>
                         </div>
-                        {(board.ownerId !== user.id ||
-                          board.members.length > 0) && (
+                        {(board?.ownerId !== user.id ||
+                          board?.members?.length > 0) && (
                           <UserAuthorTask
                             task={task}
                             members={board.members}
