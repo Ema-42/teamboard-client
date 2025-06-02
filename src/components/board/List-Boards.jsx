@@ -22,6 +22,8 @@ import {
 } from "./utils/tasksOperations";
 import ToolTipOwner from "./ToolTipOwner";
 import SharedBoard from "./ModalSharedBoardWithUsers";
+import ToolTip from "./ToolTipMembers";
+import UserAuthorTask from "./UserAuthorTask";
 
 const ListBoards = ({ boards = [] }) => {
   const [boardsList, setBoardsList] = useState([]);
@@ -362,7 +364,11 @@ const ListBoards = ({ boards = [] }) => {
         {boardsList.map((board) => (
           <div
             key={board.id}
-            className="bg-white dark:bg-gray-950/30 rounded-md shadow-lg w-80 flex flex-col"
+            className={`bg-white dark:bg-gray-950/30 rounded-md shadow-lg w-80 flex flex-col border-t-4 transition-shadow duration-200 cursor-pointer ${
+              board.ownerId === user.id
+                ? "border-teal-500 hover:shadow-teal-500/30 hover:shadow-xl"
+                : "border-amber-400 hover:shadow-amber-400/30 hover:shadow-xl"
+            }`}
           >
             <div className="p-3 flex justify-between items-center">
               {editingBoardId === board.id ? (
@@ -419,11 +425,14 @@ const ListBoards = ({ boards = [] }) => {
                       {board.ownerId !== user.id && `por ${board.owner?.name} `}
                     </span>
                   )}
+                  {board.members && board.members.length > 0 && (
+                    <ToolTip users={board.members} />
+                  )}
                 </div>
               )}
             </div>
 
-            <div className={`p-2 overflow-y-auto max-h-[calc(100vh-200px)] `}>
+            <div className={`p-2 max-h-[calc(100vh-200px)] `}>
               {board.tasks &&
                 sortTasks(board.tasks).map((task) => (
                   <div
@@ -500,9 +509,11 @@ const ListBoards = ({ boards = [] }) => {
                                       : ""
                                   }`}
                                 >
-                                  <span className="px-2 py-1   text-gray-800 dark:text-white">
-                                    {task.title}
-                                  </span>
+                                  <div className="w-40 break-words">
+                                    <label className="py-1 text-gray-800 dark:text-white">
+                                      {task.title}
+                                    </label>
+                                  </div>
                                 </p>
                                 {task.check && (
                                   <span className="ml-2 px-2 py-1 bg-green-600 text-white rounded-md text-xs">
@@ -525,7 +536,14 @@ const ListBoards = ({ boards = [] }) => {
                             </div>
                           </div>
                         </div>
-
+                        {(board.ownerId !== user.id ||
+                          board.members.length > 0) && (
+                          <UserAuthorTask
+                            task={task}
+                            members={board.members}
+                            owner={board.owner}
+                          />
+                        )}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
