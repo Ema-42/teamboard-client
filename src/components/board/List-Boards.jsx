@@ -541,7 +541,7 @@ const ListBoards = ({ boards = [] }) => {
                           <UserAuthorTask
                             task={task}
                             members={board.members}
-                            owner={board.owner}
+                            owner={user}
                           />
                         )}
                         <button
