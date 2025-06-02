@@ -78,7 +78,7 @@ const UserAuthorTask = ({ task, members,owner }) => {
       {/* Avatar del autor */}
       <div
         ref={triggerRef}
-        className="cursor-pointer h-full w-full flex items-center justify-center px-2 "
+        className="cursor-pointer h-full w-10 flex items-center justify-center px-2 "
         onClick={handleInteraction}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -87,7 +87,7 @@ const UserAuthorTask = ({ task, members,owner }) => {
           <img
             src={author.user.picture}
             alt={author.user.name}
-            className=" h-6 w-6 rounded-full shadow-sm hover:ring-2 hover:ring-blue-300 transition-all duration-200"
+            className=" h-6 w-6 rounded-full shadow-sm hover:ring-2 hover:ring-teal-300 transition-all duration-200"
           />
         ) : (
           <div className="h-6 w-6 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center hover:ring-2 hover:ring-blue-300 transition-all duration-200">

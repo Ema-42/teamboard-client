@@ -10,12 +10,15 @@ import {
   Clock,
   X,
   Users,
+  CheckCircle,
+  Circle,
 } from "lucide-react";
 import { deleteBoard, addNewBoard, editBoard } from "./utils/boardOperations";
 import Modal from "./Modal";
 import { useSecureFetch } from "../../hooks/useSecureFetch";
 import { useAuth } from "../../context/AuthContext";
 import {
+  checkACard,
   deleteTaskOfBoard,
   editACard,
   saveNewCard,
@@ -59,13 +62,13 @@ const ListBoards = ({ boards = [] }) => {
   }, [boards]);
 
   // Ordenar tareas: las completadas al final
-  const sortTasks = (tasks) => {
+  /*   const sortTasks = (tasks) => {
     return [...tasks].sort((a, b) => {
       if (a.check && !b.check) return 1;
       if (!a.check && b.check) return -1;
       return 0;
     });
-  };
+  }; */
 
   // Función para cancelar la edición de tarjeta
   const cancelEditCard = () => {
@@ -152,7 +155,7 @@ const ListBoards = ({ boards = [] }) => {
     }
   };
 
-  const toggleTaskCheck = (boardId, taskId) => {
+  const toggleTaskCheck = (boardId, taskId, taskCheck) => {
     const boardIndex = boardsList.findIndex((board) => board.id === boardId);
 
     if (boardIndex !== -1) {
@@ -168,6 +171,7 @@ const ListBoards = ({ boards = [] }) => {
         };
 
         setBoardsList(newBoards);
+        checkACard(taskId, !taskCheck, token, secureFetch);
       }
     }
   };
@@ -434,10 +438,10 @@ const ListBoards = ({ boards = [] }) => {
 
             <div className={`p-2 max-h-[calc(100vh-200px)] `}>
               {board.tasks &&
-                sortTasks(board.tasks).map((task) => (
+                board.tasks.map((task) => (
                   <div
                     key={task.id}
-                    className="mb-2 rounded-md p-0 relative bg-gray-300 dark:bg-gray-700"
+                    className={`mb-2 rounded-md p-0 relative ${task.check ?"bg-green-300 dark:bg-teal-700/50":"bg-gray-300 dark:bg-gray-700" } `}
                   >
                     {editingCardId === task.id ? (
                       <div ref={editCardRef} className="w-full p-2">
@@ -484,42 +488,30 @@ const ListBoards = ({ boards = [] }) => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                toggleTaskCheck(board.id, task.id);
+                                toggleTaskCheck(board.id, task.id, task.check);
                               }}
-                              className="mr-2 flex-shrink-0 p-1"
+                              className="mr-2 flex-shrink-0 p-1 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white transition-colors duration-200"
+                              aria-label={
+                                task.check
+                                  ? "Marcar tarea como incompleta"
+                                  : "Marcar tarea como completa"
+                              }
                             >
-                              <div
-                                className={`w-4 h-4 rounded-full border ${
-                                  task.check
-                                    ? "bg-green-500 border-green-600"
-                                    : "bg-white dark:bg-gray-700 border-gray-400 dark:border-gray-500"
-                                }`}
-                              >
-                                {task.check && (
-                                  <div className="w-2 h-2 bg-white rounded-full m-auto mt-1"></div>
-                                )}
-                              </div>
+                              {task.check ? (
+                                <CheckCircle className="h-5 w-5 text-teal-600 dark:text-teal-500" />
+                              ) : (
+                                <Circle className="h-5 w-5" />
+                              )}
                             </button>
                             <div className="flex-grow">
-                              <div className="flex items-center">
-                                <p
-                                  className={`text-sm font-medium p-1 ${
-                                    task.check
-                                      ? "line-through text-opacity-60"
-                                      : ""
-                                  }`}
-                                >
-                                  <div className="w-40 break-words">
-                                    <label className="py-1 text-gray-800 dark:text-white">
-                                      {task.title}
-                                    </label>
-                                  </div>
-                                </p>
-                                {task.check && (
-                                  <span className="ml-2 px-2 py-1 bg-green-600 text-white rounded-md text-xs">
-                                    Completada
-                                  </span>
-                                )}
+                              <div className="flex items-center text-sm font-medium p-1">
+                                <div className="w-40 break-words">
+                                  <label
+                                    className={`py-1 text-gray-800 dark:text-white `}
+                                  >
+                                    {task.title}
+                                  </label>
+                                </div>
                               </div>
 
                               {task.dueDate && (

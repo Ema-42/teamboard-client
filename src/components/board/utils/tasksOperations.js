@@ -44,6 +44,19 @@ export const editACard = async (taskId, updatedTask, token, secureFetch) => {
     }),
   });
 };
+export const checkACard = async (taskId, value, token, secureFetch) => {
+  await secureFetch(`${import.meta.env.VITE_BACKEND_URL}/tasks/${taskId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      check: value
+    }),
+  });
+};
+
 export const deleteTaskOfBoard = async (taskId, token, secureFetch) => {
   await secureFetch(`${import.meta.env.VITE_BACKEND_URL}/tasks/${taskId}`, {
     method: "DELETE",
