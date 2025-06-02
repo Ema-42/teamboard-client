@@ -368,7 +368,7 @@ const ListBoards = ({ boards = [] }) => {
         {boardsList.map((board) => (
           <div
             key={board.id}
-            className={`bg-white dark:bg-gray-950/30 rounded-md shadow-lg w-80 flex flex-col border-t-4 transition-shadow duration-200 cursor-pointer ${
+            className={`bg-white dark:bg-gray-950/40  border-b-1  rounded-md shadow-lg w-80 flex flex-col border-t-4 transition-shadow duration-200 cursor-pointer ${
               board.ownerId === user.id
                 ? "border-teal-500 hover:shadow-teal-500/30 hover:shadow-xl"
                 : "border-amber-400 hover:shadow-amber-400/30 hover:shadow-xl"
@@ -396,7 +396,7 @@ const ListBoards = ({ boards = [] }) => {
                       </div>
 
                       <h3
-                        className="font-medium text-black dark:text-white cursor-pointer hover:text-teal-500 dark:hover:text-teal-300 truncate"
+                        className="font-medium text-black  dark:text-white cursor-pointer hover:text-teal-500 dark:hover:text-teal-300 truncate"
                         onClick={() => handleEditBoard(board)}
                       >
                         {board.title}
@@ -441,7 +441,7 @@ const ListBoards = ({ boards = [] }) => {
                 board.tasks.map((task) => (
                   <div
                     key={task.id}
-                    className={`mb-2 rounded-md p-0 relative ${task.check ?"bg-green-300 dark:bg-teal-700/50":"bg-gray-300 dark:bg-gray-700" } `}
+                    className={`mb-2 rounded-md p-0 relative border border-transparent hover:border-white/40   ${task.check ?"bg-green-300 dark:bg-teal-700/50":"bg-gray-300 dark:bg-gray-700" } `}
                   >
                     {editingCardId === task.id ? (
                       <div ref={editCardRef} className="w-full p-2">
@@ -454,7 +454,7 @@ const ListBoards = ({ boards = [] }) => {
                           onKeyDown={(e) =>
                             handleKeyDown(e, handleSaveEditedCard)
                           }
-                          className="w-full bg-transparent border border-gray-400 dark:border-gray-600 rounded p-1 text-sm resize-none   focus:outline-none focus:border-teal-500 text-gray-800 dark:text-white"
+                          className="w-full bg-transparent border border-gray-400 dark:border-gray-600 rounded p-1 text-sm resize-none    focus:outline-none focus:border-teal-500 text-gray-800 dark:text-white"
                           autoFocus
                         />
                         <div className="flex gap-2 mt-2">
@@ -552,7 +552,7 @@ const ListBoards = ({ boards = [] }) => {
                 ))}
             </div>
 
-            <div className="p-2 border-t border-gray-300 dark:border-gray-600">
+            <div className="p-2 border-t border-gray-300 dark:border-gray-600 ">
               {addingCardToBoardId === board.id ? (
                 <div ref={addCardRef} className="w-full">
                   <textarea
@@ -578,13 +578,13 @@ const ListBoards = ({ boards = [] }) => {
                     />
                     <button
                       onClick={handleSaveNewCard}
-                      className="flex-1 h-10 bg-teal-500 text-white rounded hover:bg-teal-600 text-xs"
+                      className="flex-1 h-10 bg-teal-700 text-white rounded hover:bg-teal-800 text-xs"
                     >
                       Guardar
                     </button>
                     <button
                       onClick={cancelAddCard}
-                      className="w-10 h-10 bg-red-500 text-white rounded hover:bg-red-600 flex items-center justify-center"
+                      className="w-10 h-10 bg-red-500 text-white rounded hover:bg-red-600 flex items-center justify-center "
                     >
                       <X size={16} />
                     </button>
@@ -593,7 +593,7 @@ const ListBoards = ({ boards = [] }) => {
               ) : (
                 <button
                   onClick={() => startAddCard(board.id)}
-                  className="w-full text-left px-2 py-1 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md flex items-center"
+                  className=" cursor-pointer w-full text-left px-2 py-1 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md flex items-center"
                 >
                   <Plus size={16} className="mr-2" />
                   Add a card
