@@ -377,20 +377,41 @@ const ListBoards = ({ boards = [] }) => {
                   autoFocus
                 />
               ) : (
-                <div className="flex flex-col">
-                  <div className="flex items-center mb-2.5">
-                    <div className="relative group">
-                      {board.ownerId !== user.id && (
-                        <ToolTipOwner board={board} user={user} />
-                      )}
+                <div className="flex flex-col w-full">
+                  <div className="flex items-start justify-between mb-2.5 w-full">
+                    <div className="flex items-center flex-1 min-w-0">
+                      <div className="relative group">
+                        {board.ownerId !== user.id && (
+                          <ToolTipOwner board={board} user={user} />
+                        )}
+                      </div>
+
+                      <h3
+                        className="font-medium text-black dark:text-white cursor-pointer hover:text-teal-500 dark:hover:text-teal-300 truncate"
+                        onClick={() => handleEditBoard(board)}
+                      >
+                        {board.title}
+                      </h3>
                     </div>
 
-                    <h3
-                      className="font-medium text-black dark:text-white cursor-pointer hover:text-teal-500 dark:hover:text-teal-300"
-                      onClick={() => handleEditBoard(board)}
-                    >
-                      {board.title}
-                    </h3>
+                    {/* Botones de acción pegados al extremo derecho */}
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => handleShareBoard(board)}
+                        className="p-2 rounded-lg bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 hover:bg-teal-200 dark:hover:bg-teal-900/60 transition-colors duration-200 flex items-center justify-center"
+                        title="Compartir tablero"
+                      >
+                        <Users size={18} />
+                      </button>
+
+                      <button
+                        onClick={() => confirmDeleteBoard(board.id)}
+                        className="p-2 rounded-lg bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors duration-200 flex items-center justify-center"
+                        title="Eliminar tablero"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                   </div>
 
                   {board.createdAt && (
@@ -401,53 +422,6 @@ const ListBoards = ({ boards = [] }) => {
                   )}
                 </div>
               )}
-              <div className="relative">
-                <button
-                  onClick={() =>
-                    setOpenOptionsId(
-                      openOptionsId === board.id ? null : board.id
-                    )
-                  }
-                  className="p-1 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-400"
-                >
-                  <MoreHorizontal size={18} />
-                </button>
-
-                {openOptionsId === board.id && (
-                  <div
-                    ref={optionsRef}
-                    className="absolute right-0 mt-1 w-48 bg-gray-200 dark:bg-gray-700 rounded-md shadow-lg z-10"
-                  >
-                    <ul className="py-1">
-                      <li>
-                        <button
-                          onClick={() => handleEditBoard(board)}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 flex items-center"
-                        >
-                          <Edit2 size={14} className="mr-2" />
-                          Renombrar
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          onClick={() => confirmDeleteBoard(board.id)}
-                          className="w-full text-left px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-300 dark:hover:bg-gray-600 flex items-center"
-                        >
-                          <Trash2 size={14} className="mr-2" />
-                          Eliminar
-                        </button>
-                        <button
-                          onClick={() => handleShareBoard(board)}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 flex items-center"
-                        >
-                          <Users size={14} className="mr-2" />
-                          Compartir
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                )}
-              </div>
             </div>
 
             <div className={`p-2 overflow-y-auto max-h-[calc(100vh-200px)] `}>

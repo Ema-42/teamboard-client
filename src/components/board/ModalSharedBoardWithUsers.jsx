@@ -35,11 +35,17 @@ export default function SharedBoard({ board, onClose, onShare, secureFetch }) {
 
       const data = await res.json();
       const usersList = data.data || [];
-      setUsers(usersList);
-
-      // Filtrar usuarios que no son el propietario
-      const filteredList = usersList.filter((u) => u.id !== board.ownerId);
-      setFilteredUsers(filteredList);
+      
+      // Obtener IDs de usuarios que ya son miembros del tablero
+      const memberIds = board.members ? board.members.map(member => member.user.id) : [];
+      
+      // Filtrar usuarios que no son el propietario ni miembros existentes
+      const availableUsers = usersList.filter((u) => 
+        u.id !== board.ownerId && !memberIds.includes(u.id)
+      );
+      
+      setUsers(availableUsers);
+      setFilteredUsers(availableUsers);
       setIsInitialLoad(false);
     } catch (err) {
       setError("Error al cargar usuarios");
@@ -47,17 +53,17 @@ export default function SharedBoard({ board, onClose, onShare, secureFetch }) {
     } finally {
       setLoading(false);
     }
-  }, [secureFetch, token, board.ownerId, isInitialLoad]);
+  }, [secureFetch, token, board.ownerId, board.members, isInitialLoad]);
 
   // Cargar usuarios solo una vez al montar el componente
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Actualizar usuarios filtrados cuando cambia la búsqueda o selección
+  // Actualizar usuarios filtrados cuando cambia la búsqueda
   useEffect(() => {
-    // Filtrar por búsqueda
-    let filtered = users.filter((u) => u.id !== board.ownerId);
+    // Filtrar por búsqueda manteniendo el orden original
+    let filtered = users;
 
     if (searchQuery.trim() !== "") {
       filtered = filtered.filter(
@@ -67,18 +73,8 @@ export default function SharedBoard({ board, onClose, onShare, secureFetch }) {
       );
     }
 
-    // Ordenar para que los seleccionados aparezcan primero
-    filtered.sort((a, b) => {
-      const aSelected = selectedUsers.includes(a.id);
-      const bSelected = selectedUsers.includes(b.id);
-
-      if (aSelected && !bSelected) return -1;
-      if (!aSelected && bSelected) return 1;
-      return 0;
-    });
-
     setFilteredUsers(filtered);
-  }, [searchQuery, users, board.ownerId, selectedUsers]);
+  }, [searchQuery, users]);
 
   const handleSelectUser = (userId) => {
     setSelectedUsers((prev) => {
@@ -97,27 +93,35 @@ export default function SharedBoard({ board, onClose, onShare, secureFetch }) {
     setError(null);
     setSuccess(false);
     try {
-        console.log("Selected Users:", selectedUsers);
-        
+      console.log("Selected Users:", selectedUsers);
+      console.log("Board:", board);
+
       const res = await secureFetch(
         `${import.meta.env.VITE_BACKEND_URL}/boards/${board.id}/share`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userIds: selectedUsers }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ usersIds: selectedUsers }),
         }
       );
       if (!res.ok) throw new Error("No se pudo compartir el tablero");
+      
+      console.log("Compartir exitoso, estableciendo success a true");
+      setLoading(false); // Detener loading primero
       setSuccess(true);
       if (onShare) onShare(selectedUsers);
 
-      // Mostrar el mensaje de éxito por 2 segundos antes de cerrar
+      // Mostrar mensaje por 2 segundos, luego cerrar y recargar
       setTimeout(() => {
         onClose();
+        // Recargar la página para actualizar los datos
+        window.location.reload();
       }, 2000);
     } catch (err) {
       setError("Error al compartir el tablero");
-    } finally {
       setLoading(false);
     }
   };
@@ -149,8 +153,11 @@ export default function SharedBoard({ board, onClose, onShare, secureFetch }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-md p-6 relative border border-gray-200 dark:border-gray-700 animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60  dark:bg-gray-900/60 "
+      style={{ backdropFilter: "blur(4px)" }}
+    >
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6 relative border border-gray-200 dark:border-gray-700 animate-in fade-in duration-200">
         <button
           className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full p-1.5 transition-colors"
           onClick={onClose}
@@ -185,6 +192,11 @@ export default function SharedBoard({ board, onClose, onShare, secureFetch }) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+          </div>
+
+          {/* Label con contadores */}
+          <div className="text-sm text-gray-600 dark:text-gray-400 px-1">
+            {filteredUsers.length} usuarios disponibles • {selectedUsers.length} seleccionados
           </div>
 
           <div className="mb-4 max-h-64 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
@@ -243,10 +255,20 @@ export default function SharedBoard({ board, onClose, onShare, secureFetch }) {
             )}
           </div>
 
+          {/* Mensaje de éxito - más visible */}
           {success && (
-            <div className="p-3 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-400 text-sm flex items-center">
-              <CheckCircle2 size={16} className="mr-2" />
-              ¡Tablero compartido exitosamente!
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 animate-in fade-in zoom-in duration-300">
+                <div className="flex items-center text-green-600 dark:text-green-400">
+                  <CheckCircle2 size={24} className="mr-3" />
+                  <div>
+                    <h3 className="font-semibold text-lg">¡Éxito!</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Tablero compartido exitosamente
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

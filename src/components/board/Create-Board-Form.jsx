@@ -107,7 +107,7 @@ const CreateBoardForm = ({ onClose, isDarkMode }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60  dark:bg-gray-900/60">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60  dark:bg-gray-900/60 "  style={{ backdropFilter: 'blur(4px)' }}>
       <div
         ref={modalRef}
         className="w-full sm:max-w-2xl  rounded-lg shadow-xl bg-white dark:bg-gray-800 overflow-hidden"
