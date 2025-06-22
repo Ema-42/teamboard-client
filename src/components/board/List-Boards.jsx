@@ -2,16 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  MoreHorizontal,
   Plus,
   Trash2,
-  Edit2,
-  Save,
   Clock,
   X,
   Users,
   CheckCircle,
   Circle,
+  Download,
 } from "lucide-react";
 import { deleteBoard, addNewBoard, editBoard } from "./utils/boardOperations";
 import Modal from "./Modal";
@@ -27,6 +25,7 @@ import ToolTipOwner from "./ToolTipOwner";
 import SharedBoard from "./ModalSharedBoardWithUsers";
 import ToolTip from "./ToolTipMembers";
 import UserAuthorTask from "./UserAuthorTask";
+import { downloadBoardData } from "./utils/downloadUtils";
 
 const ListBoards = ({ boards = [] }) => {
   const [boardsList, setBoardsList] = useState([]);
@@ -60,6 +59,11 @@ const ListBoards = ({ boards = [] }) => {
       setBoardsList(boardsWithTasks);
     }
   }, [boards]);
+
+  // Función para manejar la descarga de un tablero específico
+  const handleDownload = (board) => {
+    downloadBoardData(board);
+  };
 
   // Ordenar tareas: las completadas al final
   /*   const sortTasks = (tasks) => {
@@ -353,8 +357,8 @@ const ListBoards = ({ boards = [] }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <div className="flex justify-between items-center mb-4">
+    <div className="flex flex-col gap-4 ">
+      <div className="flex justify-between items-center  ">
         <button
           onClick={handleAddNewBoard}
           className="bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-400 dark:hover:bg-teal-500 dark:text-black px-4 py-2 rounded-md flex items-center"
@@ -364,11 +368,11 @@ const ListBoards = ({ boards = [] }) => {
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-4 items-start">
+      <div className="flex gap-4 items-start overflow-x-auto overflow-y-visible pb-4 min-h-fit scrollbar-thin scrollbar-track-slate-50 scrollbar-thumb-slate-300 hover:scrollbar-thumb-slate-400 dark:scrollbar-track-gray-800 dark:scrollbar-thumb-gray-600 dark:hover:scrollbar-thumb-gray-500 transition-all duration-300">
         {boardsList.map((board) => (
           <div
             key={board.id}
-            className={`bg-white dark:bg-gray-950/40  border-b-1  rounded-md shadow-lg w-80 flex flex-col border-t-4 transition-shadow duration-200 cursor-pointer ${
+            className={`bg-white dark:bg-gray-950/40  border-b-1  rounded-md shadow-lg w-80 flex-shrink-0 flex flex-col border-t-4 transition-shadow duration-200 cursor-pointer ${
               board.ownerId === user.id
                 ? "border-teal-500 hover:shadow-teal-500/30 hover:shadow-xl"
                 : "border-amber-400 hover:shadow-amber-400/30 hover:shadow-xl"
@@ -414,6 +418,14 @@ const ListBoards = ({ boards = [] }) => {
                       </button>
 
                       <button
+                        onClick={() => handleDownload(board)}
+                        className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/60 transition-colors duration-200 flex items-center justify-center"
+                        title="Descargar tareas del tablero"
+                      >
+                        <Download size={18} />
+                      </button>
+
+                      <button
                         onClick={() => confirmDeleteBoard(board.id)}
                         className="p-2 rounded-lg bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors duration-200 flex items-center justify-center"
                         title="Eliminar tablero"
@@ -436,12 +448,18 @@ const ListBoards = ({ boards = [] }) => {
               )}
             </div>
 
-            <div className={`p-2 max-h-[calc(100vh-200px)] `}>
+            <div
+              className={`p-2 max-h-[calc(65vh)] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-950`}
+            >
               {board.tasks &&
                 board.tasks.map((task) => (
                   <div
                     key={task.id}
-                    className={`mb-2 rounded-md p-0 relative border border-transparent hover:border-white/40   ${task.check ?"bg-green-300 dark:bg-teal-700/50":"bg-gray-300 dark:bg-gray-700" } `}
+                    className={`mb-2 rounded-md p-0 relative border border-transparent hover:border-white/40   ${
+                      task.check
+                        ? "bg-green-300 dark:bg-teal-700/50"
+                        : "bg-gray-300 dark:bg-gray-700"
+                    } `}
                   >
                     {editingCardId === task.id ? (
                       <div ref={editCardRef} className="w-full p-2">
@@ -596,7 +614,7 @@ const ListBoards = ({ boards = [] }) => {
                   className=" cursor-pointer w-full text-left px-2 py-1 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md flex items-center"
                 >
                   <Plus size={16} className="mr-2" />
-                  Add a card
+                  Agregar Tarjeta
                 </button>
               )}
             </div>

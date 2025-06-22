@@ -249,8 +249,9 @@ const Navbar = () => {
                   className="flex items-center px-4 py-2 text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                 >
                   <Plus size={16} className="mr-2" />
-                  <span>Crear</span>
+                  <span>Nuevo Tablero</span>
                 </button>
+                
               </div>
             </div>
 
