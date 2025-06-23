@@ -36,7 +36,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex flex-1 flex-col bg-stone-300 dark:bg-gray-900 p-4 relative overflow-x-auto overflow-y-hidden">
+    <div className="flex flex-1 flex-col bg-stone-300 dark:bg-gray-900 pt-4 px-4 pb-0 relative overflow-x-auto overflow-y-hidden">
       <div className="relative z-10">
         <div className="w-full">
           <ListBoards boards={boards} />

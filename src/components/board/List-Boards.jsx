@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import "./styles/styles.css";
 import {
   Plus,
   Trash2,
@@ -10,6 +11,8 @@ import {
   CheckCircle,
   Circle,
   Download,
+  Save,
+  AlarmClockCheck,
 } from "lucide-react";
 import { deleteBoard, addNewBoard, editBoard } from "./utils/boardOperations";
 import Modal from "./Modal";
@@ -356,6 +359,14 @@ const ListBoards = ({ boards = [] }) => {
     setSharedBoardOpen(true);
   };
 
+  const formatDateDay = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString("es-ES", { month: "short" });
+    return `${day} de ${month.charAt(0).toUpperCase() + month.slice(1)}`;
+  };
+
   return (
     <div className="flex flex-col gap-4 ">
       <div className="flex justify-between items-center  ">
@@ -368,11 +379,14 @@ const ListBoards = ({ boards = [] }) => {
         </button>
       </div>
 
-      <div className="flex gap-4 items-start overflow-x-auto overflow-y-visible pb-4 min-h-fit scrollbar-thin scrollbar-track-slate-50 scrollbar-thumb-slate-300 hover:scrollbar-thumb-slate-400 dark:scrollbar-track-gray-800 dark:scrollbar-thumb-gray-600 dark:hover:scrollbar-thumb-gray-500 transition-all duration-300">
+      <div className="flex gap-4 items-start sm:pb-4  min-h-fit  overflow-x-scroll  scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-950">
         {boardsList.map((board) => (
           <div
             key={board.id}
-            className={`bg-white dark:bg-gray-950/40  border-b-1  rounded-md shadow-lg w-80 flex-shrink-0 flex flex-col border-t-4 transition-shadow duration-200 cursor-pointer ${
+            className={`bg-white dark:bg-gray-950/40 border-b-1 rounded-md shadow-lg 
+            w-full sm:w-80 flex-shrink-0 flex flex-col border-t-4 
+            transition-shadow duration-200 cursor-pointer
+            ${
               board.ownerId === user.id
                 ? "border-teal-500 hover:shadow-teal-500/30 hover:shadow-xl"
                 : "border-amber-400 hover:shadow-amber-400/30 hover:shadow-xl"
@@ -449,7 +463,7 @@ const ListBoards = ({ boards = [] }) => {
             </div>
 
             <div
-              className={`p-2 max-h-[calc(65vh)] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-950`}
+              className={`p-2 max-h-[calc(60vh)] sm:max-h-[calc(65vh)] overflow-x-hidden  scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-950`}
             >
               {board.tasks &&
                 board.tasks.map((task) => (
@@ -534,7 +548,7 @@ const ListBoards = ({ boards = [] }) => {
 
                               {task.dueDate && (
                                 <div className="flex items-center mt-1 text-xs">
-                                  <Clock
+                                  <AlarmClockCheck
                                     size={12}
                                     className="mr-1 text-gray-800 dark:text-white"
                                   />
@@ -545,6 +559,10 @@ const ListBoards = ({ boards = [] }) => {
                               )}
                             </div>
                           </div>
+
+                          <span className="px-1 text-gray-500 dark:text-gray-400 text-[11px]">
+                            Creado el {formatDateDay(task.createdAt)}
+                          </span>
                         </div>
                         {(board?.ownerId !== user.id ||
                           board?.members?.length > 0) && (

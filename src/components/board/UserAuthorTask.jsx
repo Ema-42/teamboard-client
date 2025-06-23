@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { User } from "lucide-react";
-
-const UserAuthorTask = ({ task, members,owner }) => {
+import { createPortal } from "react-dom";
+const UserAuthorTask = ({ task, members, owner }) => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
   const [isMobile, setIsMobile] = useState(false);
   const tooltipRef = useRef(null);
   const triggerRef = useRef(null);
@@ -19,10 +20,10 @@ const UserAuthorTask = ({ task, members,owner }) => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
- 
-  const ownerUser = {user: owner};
+  const ownerUser = { user: owner };
   // Encontrar el usuario que creó la tarea
-  const author = members.find((member) => member.user.id === task.created_by) || ownerUser;
+  const author =
+    members.find((member) => member.user.id === task.created_by) || ownerUser;
 
   // Cerrar tooltip al hacer click fuera (solo en móvil)
   useEffect(() => {
@@ -57,15 +58,18 @@ const UserAuthorTask = ({ task, members,owner }) => {
   };
 
   const handleMouseEnter = () => {
-    if (!isMobile) {
-      setShowTooltip(true);
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setTooltipPosition({
+        top: rect.top - 10, // 10px arriba del elemento
+        left: rect.left + rect.width / 2, // Centrado horizontalmente
+      });
     }
+    setShowTooltip(true);
   };
 
   const handleMouseLeave = () => {
-    if (!isMobile) {
-      setShowTooltip(false);
-    }
+    setShowTooltip(false);
   };
 
   // Si no hay autor, no mostrar nada
@@ -99,12 +103,14 @@ const UserAuthorTask = ({ task, members,owner }) => {
       {/* Tooltip */}
       <div
         ref={tooltipRef}
-        className={`absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-teal-600/90 dark:bg-teal-800/90 text-white text-xs rounded-lg shadow-lg whitespace-nowrap transition-all duration-200 ${
+        className={`fixed transform -translate-x-1/2 -translate-y-full px-3 py-2 bg-gray-600/90 dark:bg-gray-600/90 text-white text-xs rounded-lg shadow-lg whitespace-nowrap   ${
           showTooltip ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         style={{
+          top: tooltipPosition.top,
+          left: tooltipPosition.left,
           pointerEvents: showTooltip ? "auto" : "none",
-          zIndex: 9999,
+          zIndex: 99999,
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -119,7 +125,7 @@ const UserAuthorTask = ({ task, members,owner }) => {
         </div>
 
         {/* Flecha del tooltip */}
-        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-l-4 border-r-4 border-t-4 border-transparent border-t-teal-600 dark:border-t-teal-800"></div>
       </div>
     </div>
   );

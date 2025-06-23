@@ -49,14 +49,14 @@ export const downloadBoardData = (board) => {
   const sortedDates = Object.keys(tasksByDate).sort((a, b) => {
     const dateA = new Date(a.split(" de ").reverse().join("-"))
     const dateB = new Date(b.split(" de ").reverse().join("-"))
-    return dateB - dateA // Más reciente primero
+    return dateA - dateB // Más antiguo primero
   })
 
   // Generar contenido del archivo
-  let content = `=== LISTADO DE TAREAS - ${board.title.toUpperCase()} ===\n\n`
+  let content = `=== LISTADO DE ACTIVIDADES - ${board.title.toUpperCase()} ===\n\n`
 
   if (sortedDates.length === 0) {
-    content += "No hay tareas con fechas asignadas en este tablero.\n"
+    content += "No hay actividades con fechas asignadas en este tablero.\n"
   } else {
     sortedDates.forEach((date) => {
       content += `${date}:\n`
@@ -79,16 +79,12 @@ export const downloadBoardData = (board) => {
     })
   }
 
-  content += `\nArchivo generado el: ${new Date().toLocaleString("es-ES")}\n`
-  content += `Total de tareas: ${allTasks.length}\n`
-  content += `Tablero: ${board.title}\n`
-
   // Crear y descargar el archivo
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" })
   const url = URL.createObjectURL(blob)
   const link = document.createElement("a")
   link.href = url
-  link.download = `${board.title.replace(/[^a-zA-Z0-9]/g, "_")}_${new Date().toISOString().split("T")[0]}.txt`
+  link.download = `${board.title.replace(/[^a-zA-Z0-9]/g, "_")}_ACTIVIDADES.txt`
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
