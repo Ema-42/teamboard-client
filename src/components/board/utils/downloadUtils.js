@@ -67,7 +67,7 @@ export const downloadBoardData = (board) => {
       })
 
       tasksForDate.forEach((task) => {
-        const status = task.check ? "✓" : "○"
+        const status = task.check ? "✓" : ""
         content += `  ${status} ${task.title}`
         if (task.time) {
           content += ` (${task.time})`

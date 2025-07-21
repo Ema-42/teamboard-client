@@ -368,23 +368,29 @@ const ListBoards = ({ boards = [] }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 ">
-      <div className="flex justify-between items-center  ">
+    <div className="flex flex-col h-screen overflow-hidden">
+      <div className="flex justify-between items-center pb-4 px-4  flex-shrink-0">
         <button
           onClick={handleAddNewBoard}
-          className="bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-400 dark:hover:bg-teal-500 dark:text-black px-4 py-2 rounded-md flex items-center"
+          className="text-teal-600 hover:bg-teal-50 text-xs dark:text-teal-400 dark:hover:bg-teal-950/30 px-3 py-1.5 rounded-md flex items-center   transition-colors duration-200 border border-teal-200 dark:border-teal-800 hover:border-teal-300 dark:hover:border-teal-700"
         >
-          <Plus size={16} className="mr-2" />
+          <Plus size={12} className="mr-1.5" />
           Nuevo Tablero
         </button>
       </div>
 
-      <div className="flex gap-4 items-start sm:pb-4  min-h-fit  overflow-x-scroll  scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-950">
+      <div 
+        className="flex gap-4 items-start px-4 pb-4 flex-1 min-h-0 overflow-x-auto overflow-y-hidden boards-scroll"
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#374151 #1f2937'
+        }}
+      >
         {boardsList.map((board) => (
           <div
             key={board.id}
             className={`bg-white dark:bg-gray-950/40 border-b-1 rounded-md shadow-lg 
-            w-full sm:w-80 flex-shrink-0 flex flex-col border-t-4 
+            w-full sm:w-80 flex-shrink-0 flex flex-col border-t-4 h-full
             transition-shadow duration-200 cursor-pointer
             ${
               board.ownerId === user.id
@@ -392,7 +398,7 @@ const ListBoards = ({ boards = [] }) => {
                 : "border-amber-400 hover:shadow-amber-400/30 hover:shadow-xl"
             }`}
           >
-            <div className="p-3 flex justify-between items-center">
+            <div className="p-3 flex justify-between items-center flex-shrink-0">
               {editingBoardId === board.id ? (
                 <input
                   ref={editTitleRef}
@@ -463,7 +469,11 @@ const ListBoards = ({ boards = [] }) => {
             </div>
 
             <div
-              className={`p-2 max-h-[calc(60vh)] sm:max-h-[calc(65vh)] overflow-x-hidden  scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-950`}
+              className="p-2 flex-1 min-h-0 overflow-y-auto overflow-x-hidden tasks-scroll"
+              style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#374151 #1f2937'
+              }}
             >
               {board.tasks &&
                 board.tasks.map((task) => (
@@ -588,7 +598,7 @@ const ListBoards = ({ boards = [] }) => {
                 ))}
             </div>
 
-            <div className="p-2 border-t border-gray-300 dark:border-gray-600 ">
+            <div className="p-2 border-t border-gray-300 dark:border-gray-600 flex-shrink-0">
               {addingCardToBoardId === board.id ? (
                 <div ref={addCardRef} className="w-full">
                   <textarea
@@ -659,6 +669,44 @@ const ListBoards = ({ boards = [] }) => {
           onShare={() => setSharedBoardOpen(false)}
         />
       )}
+
+      <style jsx>{`
+        .boards-scroll::-webkit-scrollbar {
+          height: 8px;
+        }
+        
+        .boards-scroll::-webkit-scrollbar-track {
+          background: #1f2937;
+          border-radius: 4px;
+        }
+        
+        .boards-scroll::-webkit-scrollbar-thumb {
+          background: #374151;
+          border-radius: 4px;
+        }
+        
+        .boards-scroll::-webkit-scrollbar-thumb:hover {
+          background: #4b5563;
+        }
+
+        .tasks-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .tasks-scroll::-webkit-scrollbar-track {
+          background: #1f2937;
+          border-radius: 3px;
+        }
+        
+        .tasks-scroll::-webkit-scrollbar-thumb {
+          background: #374151;
+          border-radius: 3px;
+        }
+        
+        .tasks-scroll::-webkit-scrollbar-thumb:hover {
+          background: #4b5563;
+        }
+      `}</style>
     </div>
   );
 };
