@@ -368,11 +368,11 @@ const ListBoards = ({ boards = [] }) => {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-100px)] overflow-hidden">
       <div className="flex justify-between items-center pb-4 px-4  flex-shrink-0">
         <button
           onClick={handleAddNewBoard}
-          className="text-teal-600 hover:bg-teal-50 text-xs dark:text-teal-400 dark:hover:bg-teal-950/30 px-3 py-1.5 rounded-md flex items-center   transition-colors duration-200 border border-teal-200 dark:border-teal-800 hover:border-teal-300 dark:hover:border-teal-700"
+          className="text-teal-600 hover:bg-teal-50 text-sm dark:text-teal-400 dark:hover:bg-teal-950/30 px-3 py-1.5 rounded-md flex items-center   transition-colors duration-200 border border-teal-200 dark:border-teal-800 hover:border-teal-300 dark:hover:border-teal-700"
         >
           <Plus size={12} className="mr-1.5" />
           Nuevo Tablero
