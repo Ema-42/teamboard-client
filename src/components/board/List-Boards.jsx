@@ -298,8 +298,17 @@ const ListBoards = ({ boards = [] }) => {
     setDeleteModalOpen(false);
   };
 
+  const scrollContainerRef = useRef(null);  
+
+
   const handleAddNewBoard = () => {
     addNewBoard(boardsList, setBoardsList, secureFetch, user, token);
+    setTimeout(() => {
+      scrollContainerRef.current?.scrollTo({
+        left: 0,
+        behavior: "smooth",
+      });
+    }, 30);
   };
 
   const formatDate = (dateString) => {
@@ -340,6 +349,7 @@ const ListBoards = ({ boards = [] }) => {
     <div className="flex flex-col h-[calc(100vh-100px)] overflow-hidden relative">
       {/* Contenido principal sin el botón del header */}
       <div
+        ref={scrollContainerRef}
         className="flex gap-4 items-start px-4 pb-4 pt-4 flex-1 min-h-0 overflow-x-auto overflow-y-hidden boards-scroll"
         style={{
           scrollbarWidth: "thin",
@@ -603,7 +613,7 @@ const ListBoards = ({ boards = [] }) => {
       {/* Botón flotante */}
       <button
         onClick={handleAddNewBoard}
-        className="fixed bottom-6 right-6 z-50 group
+        className="fixed bottom-6 right-6 top-5/8 z-50 group
     w-12 h-12 md:hover:w-auto md:hover:px-4
     bg-teal-600 hover:bg-teal-700 
     text-white rounded-full 
