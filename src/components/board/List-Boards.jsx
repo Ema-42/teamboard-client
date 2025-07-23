@@ -1,17 +1,14 @@
 "use client";
-
 import { useState, useEffect, useRef } from "react";
 import "./styles/styles.css";
 import {
   Plus,
   Trash2,
-  Clock,
   X,
   Users,
   CheckCircle,
   Circle,
   Download,
-  Save,
   AlarmClockCheck,
 } from "lucide-react";
 import { deleteBoard, addNewBoard, editBoard } from "./utils/boardOperations";
@@ -43,13 +40,11 @@ const ListBoards = ({ boards = [] }) => {
   const [newCardDate, setNewCardDate] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteInfo, setDeleteInfo] = useState({ boardId: null, taskId: null });
-
   const optionsRef = useRef(null);
   const editTitleRef = useRef(null);
   const editCardRef = useRef(null);
   const addCardRef = useRef(null);
   const newCardTextareaRef = useRef(null);
-
   const { secureFetch } = useSecureFetch();
   const { token, user } = useAuth();
 
@@ -68,15 +63,6 @@ const ListBoards = ({ boards = [] }) => {
     downloadBoardData(board);
   };
 
-  // Ordenar tareas: las completadas al final
-  /*   const sortTasks = (tasks) => {
-    return [...tasks].sort((a, b) => {
-      if (a.check && !b.check) return 1;
-      if (!a.check && b.check) return -1;
-      return 0;
-    });
-  }; */
-
   // Función para cancelar la edición de tarjeta
   const cancelEditCard = () => {
     setEditingCardId(null);
@@ -93,16 +79,13 @@ const ListBoards = ({ boards = [] }) => {
 
   const handleSaveEditedCard = () => {
     if (!editingCardId) return;
-
     const boardIndex = boardsList.findIndex((board) =>
       board.tasks.some((task) => task.id === editingCardId)
     );
-
     if (boardIndex !== -1) {
       const taskIndex = boardsList[boardIndex].tasks.findIndex(
         (task) => task.id === editingCardId
       );
-
       if (taskIndex !== -1) {
         const newBoards = [...boardsList];
         newBoards[boardIndex].tasks[taskIndex] = {
@@ -118,17 +101,14 @@ const ListBoards = ({ boards = [] }) => {
         setBoardsList(newBoards);
       }
     }
-
     setEditingCardId(null);
   };
 
   const handleSaveNewCard = () => {
     if (!addingCardToBoardId || newCardText.trim() === "") return;
-
     const boardIndex = boardsList.findIndex(
       (board) => board.id === addingCardToBoardId
     );
-
     if (boardIndex !== -1) {
       const newBoards = [...boardsList];
       const newTask = {
@@ -146,14 +126,11 @@ const ListBoards = ({ boards = [] }) => {
       });
       //guardar en bd
       saveNewCard(newTask, token, secureFetch);
-
       setBoardsList(newBoards);
     }
-
     // Limpiar los campos pero mantener el formulario abierto
     setNewCardText("");
     setNewCardDate("");
-
     // Mantener el focus en el textarea para continuar agregando tareas
     if (newCardTextareaRef.current) {
       newCardTextareaRef.current.focus();
@@ -164,19 +141,16 @@ const ListBoards = ({ boards = [] }) => {
 
   const toggleTaskCheck = (boardId, taskId, taskCheck) => {
     const boardIndex = boardsList.findIndex((board) => board.id === boardId);
-
     if (boardIndex !== -1) {
       const taskIndex = boardsList[boardIndex].tasks.findIndex(
         (task) => task.id === taskId
       );
-
       if (taskIndex !== -1) {
         const newBoards = [...boardsList];
         newBoards[boardIndex].tasks[taskIndex] = {
           ...newBoards[boardIndex].tasks[taskIndex],
           check: !newBoards[boardIndex].tasks[taskIndex].check,
         };
-
         setBoardsList(newBoards);
         checkACard(taskId, !taskCheck, token, secureFetch);
       }
@@ -197,17 +171,14 @@ const ListBoards = ({ boards = [] }) => {
   const deleteTask = () => {
     const { boardId, taskId } = deleteInfo;
     const boardIndex = boardsList.findIndex((board) => board.id === boardId);
-
     if (boardIndex !== -1) {
       const newBoards = [...boardsList];
       newBoards[boardIndex].tasks = newBoards[boardIndex].tasks.filter(
         (task) => task.id !== taskId
       );
       deleteTaskOfBoard(taskId, token, secureFetch);
-
       setBoardsList(newBoards);
     }
-
     setDeleteModalOpen(false);
   };
 
@@ -229,7 +200,6 @@ const ListBoards = ({ boards = [] }) => {
       ) {
         handleSaveEditedCard();
       }
-
       if (
         addingCardToBoardId &&
         addCardRef.current &&
@@ -242,7 +212,6 @@ const ListBoards = ({ boards = [] }) => {
         }
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -287,7 +256,6 @@ const ListBoards = ({ boards = [] }) => {
     setAddingCardToBoardId(null);
     setEditingCardId(task.id);
     setEditingCardText(task.title);
-
     if (task.dueDate) {
       const date = new Date(task.dueDate);
       const formattedDate = date.toISOString().slice(0, 16);
@@ -351,6 +319,7 @@ const ListBoards = ({ boards = [] }) => {
       deleteTask();
     }
   };
+
   const [sharedBoardOpen, setSharedBoardOpen] = useState(false);
   const [selectedBoardToShare, setSelectedBoardToShare] = useState(null);
 
@@ -368,22 +337,13 @@ const ListBoards = ({ boards = [] }) => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] overflow-hidden">
-      <div className="flex justify-between items-center pb-4 px-4  flex-shrink-0">
-        <button
-          onClick={handleAddNewBoard}
-          className="text-teal-600 hover:bg-teal-50 text-sm dark:text-teal-400 dark:hover:bg-teal-950/30 px-3 py-1.5 rounded-md flex items-center   transition-colors duration-200 border border-teal-200 dark:border-teal-800 hover:border-teal-300 dark:hover:border-teal-700"
-        >
-          <Plus size={12} className="mr-1.5" />
-          Nuevo Tablero
-        </button>
-      </div>
-
-      <div 
-        className="flex gap-4 items-start px-4 pb-4 flex-1 min-h-0 overflow-x-auto overflow-y-hidden boards-scroll"
+    <div className="flex flex-col h-[calc(100vh-100px)] overflow-hidden relative">
+      {/* Contenido principal sin el botón del header */}
+      <div
+        className="flex gap-4 items-start px-4 pb-4 pt-4 flex-1 min-h-0 overflow-x-auto overflow-y-hidden boards-scroll"
         style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: '#374151 #1f2937'
+          scrollbarWidth: "thin",
+          scrollbarColor: "#374151 #1f2937",
         }}
       >
         {boardsList.map((board) => (
@@ -418,7 +378,6 @@ const ListBoards = ({ boards = [] }) => {
                           <ToolTipOwner board={board} user={user} />
                         )}
                       </div>
-
                       <h3
                         className="font-medium text-black  dark:text-white cursor-pointer hover:text-teal-500 dark:hover:text-teal-300 truncate"
                         onClick={() => handleEditBoard(board)}
@@ -426,7 +385,6 @@ const ListBoards = ({ boards = [] }) => {
                         {board.title}
                       </h3>
                     </div>
-
                     {/* Botones de acción pegados al extremo derecho */}
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <button
@@ -436,7 +394,6 @@ const ListBoards = ({ boards = [] }) => {
                       >
                         <Users size={18} />
                       </button>
-
                       <button
                         onClick={() => handleDownload(board)}
                         className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/60 transition-colors duration-200 flex items-center justify-center"
@@ -444,7 +401,6 @@ const ListBoards = ({ boards = [] }) => {
                       >
                         <Download size={18} />
                       </button>
-
                       <button
                         onClick={() => confirmDeleteBoard(board.id)}
                         className="p-2 rounded-lg bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors duration-200 flex items-center justify-center"
@@ -454,7 +410,6 @@ const ListBoards = ({ boards = [] }) => {
                       </button>
                     </div>
                   </div>
-
                   {board.createdAt && (
                     <span className="text-xs text-gray-700 dark:text-gray-400">
                       Creado: {formatDate(board.createdAt)}{" "}
@@ -467,12 +422,11 @@ const ListBoards = ({ boards = [] }) => {
                 </div>
               )}
             </div>
-
             <div
               className="p-2 flex-1 min-h-0 overflow-y-auto overflow-x-hidden tasks-scroll"
               style={{
-                scrollbarWidth: 'thin',
-                scrollbarColor: '#374151 #1f2937'
+                scrollbarWidth: "thin",
+                scrollbarColor: "#374151 #1f2937",
               }}
             >
               {board.tasks &&
@@ -555,7 +509,6 @@ const ListBoards = ({ boards = [] }) => {
                                   </label>
                                 </div>
                               </div>
-
                               {task.dueDate && (
                                 <div className="flex items-center mt-1 text-xs">
                                   <AlarmClockCheck
@@ -569,7 +522,6 @@ const ListBoards = ({ boards = [] }) => {
                               )}
                             </div>
                           </div>
-
                           <span className="px-1 text-gray-500 dark:text-gray-400 text-[11px]">
                             Creado el {formatDateDay(task.createdAt)}
                           </span>
@@ -597,7 +549,6 @@ const ListBoards = ({ boards = [] }) => {
                   </div>
                 ))}
             </div>
-
             <div className="p-2 border-t border-gray-300 dark:border-gray-600 flex-shrink-0">
               {addingCardToBoardId === board.id ? (
                 <div ref={addCardRef} className="w-full">
@@ -613,7 +564,6 @@ const ListBoards = ({ boards = [] }) => {
                     className="w-full bg-gray-200 dark:bg-gray-700 border border-gray-400 dark:border-gray-600 rounded p-2 text-sm resize-none min-h-[60px] text-black dark:text-white focus:outline-none focus:border-teal-500"
                     autoFocus
                   />
-
                   <div className="flex gap-2 mt-2">
                     <input
                       type="datetime-local"
@@ -650,6 +600,26 @@ const ListBoards = ({ boards = [] }) => {
         ))}
       </div>
 
+      {/* Botón flotante */}
+      <button
+        onClick={handleAddNewBoard}
+        className="fixed bottom-6 right-6 z-50 group
+    w-12 h-12 md:hover:w-auto md:hover:px-4
+    bg-teal-600 hover:bg-teal-700 
+    text-white rounded-full 
+    shadow-lg  
+    transition-all duration-600 ease-in-out
+    flex items-center justify-center
+    border-2 border-teal-500 hover:border-teal-400
+    animate-pulse-glow cursor-pointer"
+        title="Agregar tablero"
+      >
+        <Plus size={25} className="flex-shrink-0" />
+        <span className="hidden md:group-hover:inline-block ml-2 whitespace-nowrap text-sm font-medium">
+          Agregar tablero
+        </span>
+      </button>
+
       <Modal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
@@ -669,40 +639,32 @@ const ListBoards = ({ boards = [] }) => {
           onShare={() => setSharedBoardOpen(false)}
         />
       )}
-
       <style jsx>{`
         .boards-scroll::-webkit-scrollbar {
           height: 8px;
         }
-        
         .boards-scroll::-webkit-scrollbar-track {
           background: #1f2937;
           border-radius: 4px;
         }
-        
         .boards-scroll::-webkit-scrollbar-thumb {
           background: #374151;
           border-radius: 4px;
         }
-        
         .boards-scroll::-webkit-scrollbar-thumb:hover {
           background: #4b5563;
         }
-
         .tasks-scroll::-webkit-scrollbar {
           width: 6px;
         }
-        
         .tasks-scroll::-webkit-scrollbar-track {
           background: #1f2937;
           border-radius: 3px;
         }
-        
         .tasks-scroll::-webkit-scrollbar-thumb {
           background: #374151;
           border-radius: 3px;
         }
-        
         .tasks-scroll::-webkit-scrollbar-thumb:hover {
           background: #4b5563;
         }

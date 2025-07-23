@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Layout,
   Star,
@@ -18,42 +18,41 @@ import {
   X,
   SunIcon,
   MoonIcon,
-  NotepadText 
-} from "lucide-react"
+  NotepadText,
+} from "lucide-react";
 
-import Logo from "/icono.png"
-import { useAuth } from "../../context/AuthContext"
-import CreateBoardForm from "../board/Create-Board-Form"
- 
+import Logo from "/icono.png";
+import { useAuth } from "../../context/AuthContext";
+import CreateBoardForm from "../board/Create-Board-Form";
 
 const Navbar = () => {
-  const { user, logout, isAuthenticated } = useAuth()
+  const { user, logout, isAuthenticated } = useAuth();
 
-  const [openDropdown, setOpenDropdown] = useState(null)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const dropdownRef = useRef(null)
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const dropdownRef = useRef(null);
 
   // Estado para el tema oscuro/claro
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // 1. Verificar si hay un tema guardado en localStorage
-    const savedTheme = localStorage.getItem("theme")
+    const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
-      return savedTheme === "dark"
+      return savedTheme === "dark";
     }
     // 2. Si no, verificar la preferencia del sistema
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-  })
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
 
   useEffect(() => {
     // Aplicar el tema al montar el componente
-    document.documentElement.classList.toggle("dark", isDarkMode)
-    localStorage.setItem("theme", isDarkMode ? "dark" : "light")
-  }, [isDarkMode])
+    document.documentElement.classList.toggle("dark", isDarkMode);
+    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode]);
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode)
-  }
+    setIsDarkMode(!isDarkMode);
+  };
 
   // Datos de ejemplo para los tableros
   const boards = [
@@ -61,9 +60,9 @@ const Navbar = () => {
     { id: 2, name: "Marketing Q2", isFavorite: true },
     { id: 3, name: "Desarrollo App", isFavorite: false },
     { id: 4, name: "Recursos Humanos", isFavorite: false },
-  ]
+  ];
 
-  const favoriteBoards = boards.filter((board) => board.isFavorite)
+  const favoriteBoards = boards.filter((board) => board.isFavorite);
 
   // Datos de ejemplo para las notificaciones
   const notifications = [
@@ -82,37 +81,35 @@ const Navbar = () => {
       text: "Fecha límite: 'Desarrollo App' vence mañana",
       time: "Hace 1 día",
     },
-  ]
+  ];
 
   const toggleDropdown = (dropdown) => {
     if (openDropdown === dropdown) {
-      setOpenDropdown(null)
+      setOpenDropdown(null);
     } else {
-      setOpenDropdown(dropdown)
+      setOpenDropdown(dropdown);
     }
-  }
+  };
 
   const closeDropdowns = (e) => {
     if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-      setOpenDropdown(null)
+      setOpenDropdown(null);
     }
-  }
+  };
 
   useEffect(() => {
-    document.addEventListener("mousedown", closeDropdowns)
+    document.addEventListener("mousedown", closeDropdowns);
     return () => {
-      document.removeEventListener("mousedown", closeDropdowns)
-    }
-  }, [])
-
-  const openCreateModal = () => {
-    setIsCreateModalOpen(true)
-    setOpenDropdown(null) // Cerrar cualquier dropdown abierto
-  }
+      document.removeEventListener("mousedown", closeDropdowns);
+    };
+  }, []);
 
   return (
     <>
-      <nav className="bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700" ref={dropdownRef}>
+      <nav
+        className="bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+        ref={dropdownRef}
+      >
         <div className="px-0 sm:px-2 lg:px-4">
           <div className="flex h-16">
             {/* Left side */}
@@ -127,9 +124,22 @@ const Navbar = () => {
               </button>
 
               {/* Logo */}
-              <Link to="/dashboard" className="flex-shrink-0 flex items-center ml-0 md:ml-2">
-                <NotepadText size={30} color={isDarkMode ? "#fff" : "#000"} className="mr-2" />
-                <span className={`font-bold hidden sm:block ${isDarkMode ? "text-teal-500" : "text-teal-700"}`}>TeamBoard</span>
+              <Link
+                to="/dashboard"
+                className="flex-shrink-0 flex items-center ml-0 md:ml-2"
+              >
+                <NotepadText
+                  size={30}
+                  color={isDarkMode ? "#fff" : "#000"}
+                  className="mr-2"
+                />
+                <span
+                  className={`font-bold hidden sm:block ${
+                    isDarkMode ? "text-teal-500" : "text-teal-700"
+                  }`}
+                >
+                  TeamBoard
+                </span>
               </Link>
 
               {/* Desktop Navigation */}
@@ -153,14 +163,19 @@ const Navbar = () => {
                     <div className="absolute left-0 mt-2 w-64 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-50">
                       <div className="py-1">
                         <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-600">
-                          <h3 className="text-sm font-medium text-gray-900 dark:text-white">Tus tableros</h3>
+                          <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                            Tus tableros
+                          </h3>
                           <div className="mt-2 relative">
                             <input
                               type="text"
                               placeholder="Buscar tableros..."
                               className="w-full pl-8 pr-4 py-2 text-sm border rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-teal-500 focus:border-teal-500"
                             />
-                            <Search size={16} className="absolute left-2 top-2.5 text-gray-400" />
+                            <Search
+                              size={16}
+                              className="absolute left-2 top-2.5 text-gray-400"
+                            />
                           </div>
                         </div>
                         <div className="max-h-60 overflow-y-auto">
@@ -171,25 +186,21 @@ const Navbar = () => {
                               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600"
                             >
                               <div className="flex items-center">
-                                <Layout size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
+                                <Layout
+                                  size={16}
+                                  className="mr-2 text-gray-500 dark:text-gray-400"
+                                />
                                 <span>{board.name}</span>
                                 {board.isFavorite && (
-                                  <Star size={16} className="ml-auto text-yellow-400" fill="currentColor" />
+                                  <Star
+                                    size={16}
+                                    className="ml-auto text-yellow-400"
+                                    fill="currentColor"
+                                  />
                                 )}
                               </div>
                             </Link>
                           ))}
-                        </div>
-                        <div className="border-t border-gray-200 dark:border-gray-600">
-                          <button
-                            onClick={openCreateModal}
-                            className="block w-full text-left px-4 py-2 text-sm text-teal-600 hover:bg-gray-100 dark:text-teal-400 dark:hover:bg-gray-600"
-                          >
-                            <div className="flex items-center">
-                              <Plus size={16} className="mr-2" />
-                              <span>Crear nuevo tablero</span>
-                            </div>
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -215,7 +226,9 @@ const Navbar = () => {
                     <div className="absolute left-0 mt-2 w-64 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-50">
                       <div className="py-1">
                         <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-600">
-                          <h3 className="text-sm font-medium text-gray-900 dark:text-white">Tableros favoritos</h3>
+                          <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                            Tableros favoritos
+                          </h3>
                         </div>
                         <div className="max-h-60 overflow-y-auto">
                           {favoriteBoards.length > 0 ? (
@@ -226,9 +239,16 @@ const Navbar = () => {
                                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600"
                               >
                                 <div className="flex items-center">
-                                  <Layout size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
+                                  <Layout
+                                    size={16}
+                                    className="mr-2 text-gray-500 dark:text-gray-400"
+                                  />
                                   <span>{board.name}</span>
-                                  <Star size={16} className="ml-auto text-yellow-400" fill="currentColor" />
+                                  <Star
+                                    size={16}
+                                    className="ml-auto text-yellow-400"
+                                    fill="currentColor"
+                                  />
                                 </div>
                               </Link>
                             ))
@@ -244,14 +264,13 @@ const Navbar = () => {
                 </div>
 
                 {/* Create Button */}
-                <button
+                {/*                 <button
                   onClick={openCreateModal}
                   className="flex items-center px-4 py-2 text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
                 >
                   <Plus size={16} className="mr-2" />
                   <span>Nuevo Tablero</span>
-                </button>
-                
+                </button> */}
               </div>
             </div>
 
@@ -289,7 +308,9 @@ const Navbar = () => {
                   <div className="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-50">
                     <div className="py-1">
                       <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-600">
-                        <h3 className="text-sm font-medium text-gray-900 dark:text-white">Notificaciones</h3>
+                        <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                          Notificaciones
+                        </h3>
                       </div>
                       <div className="max-h-96 overflow-y-auto">
                         {notifications.map((notification) => (
@@ -297,8 +318,12 @@ const Navbar = () => {
                             key={notification.id}
                             className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-600 border-b border-gray-200 dark:border-gray-600 last:border-b-0"
                           >
-                            <p className="text-sm text-gray-700 dark:text-gray-200">{notification.text}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{notification.time}</p>
+                            <p className="text-sm text-gray-700 dark:text-gray-200">
+                              {notification.text}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {notification.time}
+                            </p>
                           </div>
                         ))}
                       </div>
@@ -320,7 +345,9 @@ const Navbar = () => {
                 <button
                   onClick={() => toggleDropdown("info")}
                   className={`p-1 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 ${
-                    openDropdown === "info" ? "bg-teal-100 text-teal-800 dark:bg-teal-800/30 dark:text-teal-100" : ""
+                    openDropdown === "info"
+                      ? "bg-teal-100 text-teal-800 dark:bg-teal-800/30 dark:text-teal-100"
+                      : ""
                   }`}
                 >
                   <span className="sr-only">Información</span>
@@ -330,10 +357,13 @@ const Navbar = () => {
                 {openDropdown === "info" && (
                   <div className="origin-top-right absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-50">
                     <div className="py-3 px-4">
-                      <h3 className="text-sm font-medium text-gray-900 dark:text-white">Acerca de</h3>
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                        Acerca de
+                      </h3>
                       <div className="mt-2">
                         <p className="text-sm text-gray-700 dark:text-gray-200">
-                          Desarrollado por <span className="font-medium">Emanuel</span>
+                          Desarrollado por{" "}
+                          <span className="font-medium">Emanuel</span>
                         </p>
                         <p className="text-sm text-gray-700 dark:text-gray-200 mt-1">
                           <a
@@ -364,21 +394,32 @@ const Navbar = () => {
                 <button
                   onClick={() => toggleDropdown("profile")}
                   className={`flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 ${
-                    openDropdown === "profile" ? "ring-2 ring-teal-500 ring-offset-2" : ""
+                    openDropdown === "profile"
+                      ? "ring-2 ring-teal-500 ring-offset-2"
+                      : ""
                   }`}
                 >
                   <span className="sr-only">Abrir menú de usuario</span>
-                  <img className="h-8 w-8 rounded-full" src={user?.picture} alt={user?.name} />
+                  <img
+                    className="h-8 w-8 rounded-full"
+                    src={user?.picture}
+                    alt={user?.name}
+                  />
                 </button>
-                
 
                 {openDropdown === "profile" && (
                   <div className="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-50">
                     <div className="py-1">
                       <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-600">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">Información de cuenta</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-200 truncate">{user?.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          Información de cuenta
+                        </p>
+                        <p className="text-sm text-gray-700 dark:text-gray-200 truncate">
+                          {user?.name}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                          {user?.email}
+                        </p>
                       </div>
                       <Link
                         to="/account"
@@ -440,7 +481,12 @@ const Navbar = () => {
                 <Grid size={16} className="mr-2" />
                 <span>Tableros</span>
               </div>
-              <ChevronDown size={16} className={`transform ${openDropdown === "mobile-boards" ? "rotate-180" : ""}`} />
+              <ChevronDown
+                size={16}
+                className={`transform ${
+                  openDropdown === "mobile-boards" ? "rotate-180" : ""
+                }`}
+              />
             </button>
 
             {openDropdown === "mobile-boards" && (
@@ -452,21 +498,21 @@ const Navbar = () => {
                     className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                   >
                     <div className="flex items-center">
-                      <Layout size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
+                      <Layout
+                        size={16}
+                        className="mr-2 text-gray-500 dark:text-gray-400"
+                      />
                       <span>{board.name}</span>
-                      {board.isFavorite && <Star size={16} className="ml-2 text-yellow-400" fill="currentColor" />}
+                      {board.isFavorite && (
+                        <Star
+                          size={16}
+                          className="ml-2 text-yellow-400"
+                          fill="currentColor"
+                        />
+                      )}
                     </div>
                   </Link>
                 ))}
-                <button
-                  onClick={openCreateModal}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-teal-600 hover:bg-gray-100 dark:text-teal-400 dark:hover:bg-gray-700"
-                >
-                  <div className="flex items-center">
-                    <Plus size={16} className="mr-2" />
-                    <span>Crear nuevo tablero</span>
-                  </div>
-                </button>
               </div>
             )}
 
@@ -484,7 +530,9 @@ const Navbar = () => {
               </div>
               <ChevronDown
                 size={16}
-                className={`transform ${openDropdown === "mobile-favorites" ? "rotate-180" : ""}`}
+                className={`transform ${
+                  openDropdown === "mobile-favorites" ? "rotate-180" : ""
+                }`}
               />
             </button>
 
@@ -498,34 +546,26 @@ const Navbar = () => {
                       className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
                     >
                       <div className="flex items-center">
-                        <Layout size={16} className="mr-2 text-gray-500 dark:text-gray-400" />
+                        <Layout
+                          size={16}
+                          className="mr-2 text-gray-500 dark:text-gray-400"
+                        />
                         <span>{board.name}</span>
                       </div>
                     </Link>
                   ))
                 ) : (
-                  <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">No tienes tableros favoritos</div>
+                  <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                    No tienes tableros favoritos
+                  </div>
                 )}
               </div>
             )}
-
-            <button
-              onClick={openCreateModal}
-              className="block w-full px-3 py-2 rounded-md text-base font-medium text-white bg-teal-600 hover:bg-teal-700"
-            >
-              <div className="flex items-center">
-                <Plus size={16} className="mr-2" />
-                <span>Crear</span>
-              </div>
-            </button>
           </div>
         </div>
       </nav>
-
-      {/* Modal de creación de tablero */}
-      {isCreateModalOpen && <CreateBoardForm onClose={() => setIsCreateModalOpen(false)} isDarkMode={isDarkMode} />}
     </>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
