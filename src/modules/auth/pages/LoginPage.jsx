@@ -232,12 +232,23 @@ const LoginPage = () => {
             O iniciar sesión con
           </p>
           <div className="grid grid-cols-1 gap-3">
-            <GoogleLogin
-              onSuccess={(credentialResponse) => {
-                sendGoogleLoginRequest(credentialResponse.credential); // Esta función apunta al nuevo endpoint
-              }}
-              onError={() => console.log("Login Failed")}
-            />
+            <div className="w-full">
+              {" "}
+              {/* Contenedor con ancho completo */}
+              <GoogleLogin
+                size="large" // Tamaño grande
+                width="100%" // Ancho completo
+                text="continue_with" // o el texto que prefieras
+                onSuccess={(credentialResponse) => {
+                  sendGoogleLoginRequest(credentialResponse.credential);
+                }}
+                onError={() => console.log("Login Failed")}
+                style={{
+                  width: "100%", // Forzar ancho completo
+                  minWidth: "200px", // Ancho mínimo
+                }}
+              />
+            </div>
           </div>
         </div>
 

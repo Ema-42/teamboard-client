@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../../../context/AuthContext";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
   const { login } = useAuth();
@@ -91,13 +91,13 @@ const RegisterPage = () => {
           body: JSON.stringify({ jwt: credential }), // le mandamos el token como objeto
         }
       );
-      const data = await response.json();  
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || "Error al registrar con Google");
       }
-  
-      const { user, token } = data;  
+
+      const { user, token } = data;
       login(user, token);
 
       document.body.style.pointerEvents = "none";
@@ -245,12 +245,19 @@ const RegisterPage = () => {
             Otra opción
           </p>
           <div className="grid grid-cols-1 gap-3">
-            <GoogleLogin
-              onSuccess={(CredentialsResponse) => {
-                sendGoogleRegisterRequest(CredentialsResponse.credential);
-              }}
-              onError={() => console.log("Login Failed")}
-            ></GoogleLogin>
+            <div className="w-full">
+              <GoogleLogin
+                text="signup_with" // "Sign up with Google"
+                size="large" // Botón más grande
+                width="100%" // Ancho completo
+                shape="rectangular" // Forma rectangular (más estándar)
+                theme="outline" // o "filled_blue" según tu diseño
+                onSuccess={(credentialsResponse) => {
+                  sendGoogleRegisterRequest(credentialsResponse.credential);
+                }}
+                onError={() => console.log("Registration Failed")}
+              />
+            </div>
           </div>
         </div>
 
