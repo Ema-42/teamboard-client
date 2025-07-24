@@ -213,23 +213,7 @@ const RegisterPage = () => {
               La contraseña debe tener al menos 8 caracteres
             </p>
           </div>
-
-          <div className="flex items-center">
-            <input
-              id="terms"
-              type="checkbox"
-              className="h-4 w-4 rounded border focus:ring-2 focus:ring-offset-2 bg-white border-gray-300 focus:ring-teal-500 text-teal-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-teal-500 dark:text-teal-500"
-            />
-            <label
-              htmlFor="terms"
-              className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-            >
-              Acepto los{" "}
-              <a href="#" className="text-teal-600 hover:text-teal-500">
-                términos y condiciones
-              </a>
-            </label>
-          </div>
+ 
 
           <button
             type="submit"
@@ -245,19 +229,13 @@ const RegisterPage = () => {
             Otra opción
           </p>
           <div className="grid grid-cols-1 gap-3">
-            <div className="w-full">
-              <GoogleLogin
-                text="signup_with" // "Sign up with Google"
-                size="large" // Botón más grande
-                width="100%" // Ancho completo
-                shape="rectangular" // Forma rectangular (más estándar)
-                theme="outline" // o "filled_blue" según tu diseño
-                onSuccess={(credentialsResponse) => {
-                  sendGoogleRegisterRequest(credentialsResponse.credential);
-                }}
-                onError={() => console.log("Registration Failed")}
-              />
-            </div>
+            <GoogleLogin
+              text="signup_with"
+              onSuccess={(CredentialsResponse) => {
+                sendGoogleRegisterRequest(CredentialsResponse.credential);
+              }}
+              onError={() => console.log("Register Failed")}
+            ></GoogleLogin>
           </div>
         </div>
 

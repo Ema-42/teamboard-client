@@ -197,19 +197,7 @@ const LoginPage = () => {
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                type="checkbox"
-                className="h-4 w-4 rounded border focus:ring-2 focus:ring-offset-2 bg-white border-gray-300 focus:ring-teal-500 text-teal-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-teal-500 dark:text-teal-500"
-              />
-              <label
-                htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-              >
-                Recordarme
-              </label>
-            </div>
+             
             <a
               href="#"
               className="text-sm font-medium text-teal-600 hover:text-teal-500"
@@ -232,23 +220,13 @@ const LoginPage = () => {
             O iniciar sesión con
           </p>
           <div className="grid grid-cols-1 gap-3">
-            <div className="w-full">
-              {" "}
-              {/* Contenedor con ancho completo */}
-              <GoogleLogin
-                size="large" // Tamaño grande
-                width="100%" // Ancho completo
-                text="continue_with" // o el texto que prefieras
-                onSuccess={(credentialResponse) => {
-                  sendGoogleLoginRequest(credentialResponse.credential);
-                }}
-                onError={() => console.log("Login Failed")}
-                style={{
-                  width: "100%", // Forzar ancho completo
-                  minWidth: "200px", // Ancho mínimo
-                }}
-              />
-            </div>
+            <GoogleLogin
+              text="signin_with"
+              onSuccess={(credentialResponse) => {
+                sendGoogleLoginRequest(credentialResponse.credential); // Esta función apunta al nuevo endpoint
+              }}
+              onError={() => console.log("Login Failed")}
+            />
           </div>
         </div>
 
