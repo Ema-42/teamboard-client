@@ -135,10 +135,10 @@ const Navbar = () => {
                 />
                 <span
                   className={`font-bold hidden sm:block ${
-                    isDarkMode ? "text-teal-500" : "text-teal-700"
-                  }`}
+                    isDarkMode ? "text-white" : "text-teal-700"
+                  } hover:dark:text-teal-500`}
                 >
-                  TeamBoard
+                  MI CUADERNO
                 </span>
               </Link>
 

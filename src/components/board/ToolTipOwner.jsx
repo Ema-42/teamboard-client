@@ -8,7 +8,7 @@ const ToolTipOwner = ({ board, user }) => {
   };
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block ">
       <img
         className="h-8 w-8 rounded-full mr-4 cursor-pointer"
         src={board.owner?.picture}
@@ -18,7 +18,7 @@ const ToolTipOwner = ({ board, user }) => {
         onMouseLeave={() => setShowTooltip(false)}
       />
       <div
-        className={`absolute bottom-full left-0 mb-2 px-3 py-2 bg-gray-400 black:bg-gray-800 text-gray-900 black:text-white text-sm rounded-lg whitespace-nowrap z-10 transition-all duration-200 ${
+        className={`absolute bottom-full left-0 top-10 mb-2 px-3 pb-10 bg-gray-400 black:bg-gray-800 text-gray-900 black:text-white text-sm rounded-lg whitespace-nowrap z-20 transition-all duration-200 ${
           showTooltip ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         style={{ pointerEvents: "none" }}
