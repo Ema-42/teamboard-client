@@ -6,10 +6,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../../../context/AuthContext";
+import { useLoading } from "../../../hooks/useLoading";  
+import LoadingOverlay from "../../../components/ui/LoadingOverlay";  
 
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { isLoading, withLoading } = useLoading();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -45,31 +48,35 @@ const LoginPage = () => {
       email: formData.email,
       password: formData.password,
     };
+
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
+      await withLoading(async () => {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/auth/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Error al iniciar sesión");
         }
-      );
+        
+        const { user, token } = await response.json();
+        // Guarda el usuario y el token
+        login(user, token);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al iniciar sesión");
-      }
-      const { user, token } = await response.json();
-      // Guarda el usuario y el token
-      login(user, token);
-
-      toast.success(`Inicio de sesión exitoso`, { theme: "colored" });
-      document.body.style.pointerEvents = "none";
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 3000);
+        toast.success(`Inicio de sesión exitoso`, { theme: "colored" });
+        
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000);
+      });
     } catch (error) {
       toast.error(`${error.message}`, { theme: "colored" });
     }
@@ -77,37 +84,36 @@ const LoginPage = () => {
 
   const sendGoogleLoginRequest = async (jwtFromGoogle) => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/auth/google/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ jwt: jwtFromGoogle }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.message || "Error al iniciar sesión con Google"
+      await withLoading(async () => {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/auth/google/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ jwt: jwtFromGoogle }),
+          }
         );
-      }
-      const { user, token } = await response.json();
-      // Guarda el usuario y el token
-      login(user, token);
-      toast.success("Inicio de sesión exitoso con Google", {
-        theme: "colored",
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.message || "Error al iniciar sesión con Google"
+          );
+        }
+        
+        const { user, token } = await response.json();
+        // Guarda el usuario y el token
+        login(user, token);
+        toast.success("Inicio de sesión exitoso con Google", {
+          theme: "colored",
+        });
+
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000);
       });
-
-      // Guarda la sesión, token, etc. Aquí depende de cómo manejes el login
-      // Por ejemplo, guardar el token en localStorage:
-      // localStorage.setItem("token", userData.token);
-
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 2000);
     } catch (error) {
       toast.error(`${error.message}`, { theme: "colored" });
     }
@@ -115,6 +121,12 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
+      {/* Loading Overlay */}
+      <LoadingOverlay 
+        isVisible={isLoading} 
+        message="Iniciando sesión..." 
+      />
+      
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-teal-500/10 dark:bg-teal-900/10" />
@@ -138,7 +150,8 @@ const LoginPage = () => {
           <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-yellow-300 dark:hover:bg-gray-600"
+            disabled={isLoading}
+            className="p-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-yellow-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Cambiar tema"
           >
             {isDarkMode ? <SunIcon size={20} /> : <MoonIcon size={20} />}
@@ -158,9 +171,10 @@ const LoginPage = () => {
               type="email"
               name="email"
               required
+              disabled={isLoading}
               onChange={handleChange}
               placeholder="Correo"
-              className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:outline-none transition-colors bg-white border-gray-300 focus:border-teal-500 focus:ring-teal-500/50 text-gray-900 placeholder-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:border-teal-500 dark:focus:ring-teal-500/50 dark:text-white dark:placeholder-gray-400"
+              className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:outline-none transition-colors bg-white border-gray-300 focus:border-teal-500 focus:ring-teal-500/50 text-gray-900 placeholder-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:border-teal-500 dark:focus:ring-teal-500/50 dark:text-white dark:placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -176,15 +190,17 @@ const LoginPage = () => {
                 id="password"
                 name="password"
                 required
+                disabled={isLoading}
                 onChange={handleChange}
                 type={isPasswordVisible ? "text" : "password"}
                 placeholder="Contraseña"
-                className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:outline-none transition-colors bg-white border-gray-300 focus:border-teal-500 focus:ring-teal-500/50 text-gray-900 placeholder-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:border-teal-500 dark:focus:ring-teal-500/50 dark:text-white dark:placeholder-gray-400"
+                className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:outline-none transition-colors bg-white border-gray-300 focus:border-teal-500 focus:ring-teal-500/50 text-gray-900 placeholder-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:border-teal-500 dark:focus:ring-teal-500/50 dark:text-white dark:placeholder-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 type="button"
+                disabled={isLoading}
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400"
+                className="absolute inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Mostrar contraseña"
               >
                 {isPasswordVisible ? (
@@ -197,7 +213,6 @@ const LoginPage = () => {
           </div>
 
           <div className="flex items-center justify-between">
-             
             <a
               href="#"
               className="text-sm font-medium text-teal-600 hover:text-teal-500"
@@ -208,9 +223,10 @@ const LoginPage = () => {
 
           <button
             type="submit"
-            className="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+            disabled={isLoading}
+            className="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-teal-600"
           >
-            Entrar
+            {isLoading ? "Iniciando sesión..." : "Entrar"}
           </button>
           <ToastContainer />
         </form>
@@ -220,13 +236,15 @@ const LoginPage = () => {
             O iniciar sesión con
           </p>
           <div className="grid grid-cols-1 gap-3">
-            <GoogleLogin
-              text="signin_with"
-              onSuccess={(credentialResponse) => {
-                sendGoogleLoginRequest(credentialResponse.credential); // Esta función apunta al nuevo endpoint
-              }}
-              onError={() => console.log("Login Failed")}
-            />
+            <div className={isLoading ? "pointer-events-none opacity-50" : ""}>
+              <GoogleLogin
+                text="signin_with"
+                onSuccess={(credentialResponse) => {
+                  sendGoogleLoginRequest(credentialResponse.credential);
+                }}
+                onError={() => console.log("Login Failed")}
+              />
+            </div>
           </div>
         </div>
 
@@ -234,7 +252,9 @@ const LoginPage = () => {
           ¿No tienes una cuenta?{" "}
           <Link
             to="/register"
-            className="font-medium text-teal-600 hover:text-teal-500"
+            className={`font-medium text-teal-600 hover:text-teal-500 ${
+              isLoading ? "pointer-events-none opacity-50" : ""
+            }`}
           >
             Regístrate
           </Link>
